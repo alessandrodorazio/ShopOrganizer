@@ -1,0 +1,7 @@
+{
+  "name": "ShopOrganizer",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
