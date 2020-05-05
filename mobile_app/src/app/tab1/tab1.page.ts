@@ -56,7 +56,7 @@ export class Tab1Page {
   private loadSome() {
     for (let x = 0; x < this.random(10, 20); x++) {
       let prodName = this.getProductName() + ' (' + this.id + ')';
-      if(this.searchText !== '') {
+      if (this.searchText !== '') {
         prodName = this.searchText + ' - ' + prodName;
       }
       this.products.push(new Product(this.id++, prodName, this.getPezzatura(),
@@ -71,7 +71,7 @@ export class Tab1Page {
   }
 
   private getProductName() {
-      return this.prodNameA[this.random(0, this.prodNameA.length)] + ' ' + this.prodNameB[this.random(0, this.prodNameB.length)]
+      return this.prodNameA[this.random(0, this.prodNameA.length)] + ' ' + this.prodNameB[this.random(0, this.prodNameB.length)];
   }
 
   private getPezzatura() {
