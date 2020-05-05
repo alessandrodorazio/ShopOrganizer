@@ -13,6 +13,8 @@
     </ion-toolbar>
   </ion-header>
 
+  <ion-searchbar placeholder="Cerca un prodotto..." [(ngModel)]="searchText" (search)="doSearch($event)"></ion-searchbar>
+
   <ion-list>
     <ion-item *ngFor="let product of products" [ngClass]="{'yellow': product.qty>0}">
       <ion-avatar slot="start">
@@ -22,7 +24,10 @@
         <h2>{{ product.name }}</h2>
         <p>{{ product.size }}</p>
       </ion-label>
-      <ion-input type="number" [(ngModel)]="product.qty" min="0" max="20"></ion-input>
+      <ion-label float-right>
+        <h3>Quantit&aacute;: </h3>
+      </ion-label>
+      <ion-input iten-end type="number" [(ngModel)]="product.qty" min="0" max="20"></ion-input>
     </ion-item>
   </ion-list>
 

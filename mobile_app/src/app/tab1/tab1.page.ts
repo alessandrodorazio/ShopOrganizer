@@ -16,20 +16,18 @@ export class Tab1Page {
   prodNameB = ['Oliva', 'Integrale', 'Bianco', 'Fresca', 'Appassita', 'Cotto', 'Crudo', 'Al dente', 'Scelte', 'al Naturale',
                'Sott\'olio', 'Sott\'aceto', 'Liquido', 'Solido'];
   pezzatura = ['3x100g', '1L', '2L', '100g', '200g', '1pz', '500ml', '1Kg'];
+  searchText = '';
+  prevSearchText = '';
 
   constructor() {
-      for (let x = 0; x < 50; x++) {
-        this.products.push(new Product(this.id++, this.getProductName() + ' (' + this.id + ')', this.getPezzatura(),
-                           this.random(0, 5), '/assets/product/' + this.random(0, 5) + '.jpg'));
-      }
+      this.loadSome();
   }
+
+  // Events...
 
   loadData(event: any) {
     setTimeout(() => {
-      for (let x = 0; x < this.random(10, 20); x++) {
-        this.products.push(new Product(this.id++, this.getProductName() + ' (' + this.id + ')', this.getPezzatura(),
-                                       this.random(0, 5), '/assets/product/' + this.random(0, 5) + '.jpg'));
-      }
+      this.loadSome();
 
       console.log('Done: ' + this.id);
       event.target.complete();
@@ -40,8 +38,30 @@ export class Tab1Page {
     }, 500);
   }
 
-  toggleInfiniteScroll() {
-    this.infiniteScroll.disabled = !this.infiniteScroll.disabled;
+  doSearch(event: any) {
+    console.log('You searched for: ' + this.searchText);
+    if (this.searchText === this.prevSearchText) {
+      return;
+    }
+
+    this.products = [];
+    this.id = 0;
+    this.infiniteScroll.disabled = false;
+    this.loadSome();
+    this.prevSearchText = this.searchText;
+  }
+
+  // Helpers...
+
+  private loadSome() {
+    for (let x = 0; x < this.random(10, 20); x++) {
+      let prodName = this.getProductName() + ' (' + this.id + ')';
+      if(this.searchText !== '') {
+        prodName = this.searchText + ' - ' + prodName;
+      }
+      this.products.push(new Product(this.id++, prodName, this.getPezzatura(),
+                                     this.random(0, 5), '/assets/product/' + this.random(0, 5) + '.jpg'));
+    }
   }
 
   private random(min: number, max: number) {
