@@ -13,25 +13,25 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-searchbar placeholder="Cerca un prodotto..." [(ngModel)]="searchText" (search)="doSearch($event)"></ion-searchbar>
+  <ion-searchbar placeholder="Cerca un prodotto..." [(ngModel)]="testoRicerca" (ionChange)="effettuaRicerca($event.target.value)" debounce="500"></ion-searchbar>
 
   <ion-list>
-    <ion-item *ngFor="let product of products" [ngClass]="{'yellow': product.qty>0}">
+    <ion-item *ngFor="let prodotto of prodotti" [ngClass]="{'yellow': selezionati.get(prodotto.id)>0}">
       <ion-avatar slot="start">
-        <img src="{{ product.image }}">
+        <img src="{{ prodotto.immagine }}">
       </ion-avatar>
       <ion-label>
-        <h2>{{ product.name }}</h2>
-        <p>{{ product.size }}</p>
+        <h2>{{ prodotto.nome }}&nbsp;{{ prodotto.marca }}</h2>
+        <p>{{ prodotto.pezzatura }}</p>
       </ion-label>
       <ion-label float-right>
         <h3>Quantit&aacute;: </h3>
       </ion-label>
-      <ion-input iten-end type="number" [(ngModel)]="product.qty" min="0" max="20"></ion-input>
+      <ion-input iten-end type="number" [ngModel]="selezionati.get(prodotto.id)" (ngModelChange)="selezionati.set(prodotto.id, $event)" min="0" max="20"></ion-input>
     </ion-item>
   </ion-list>
 
-  <ion-infinite-scroll threshold="100px" (ionInfinite)="loadData($event)">
+  <ion-infinite-scroll threshold="100px" (ionInfinite)="caricaAltri($event)">
     <ion-infinite-scroll-content
       loadingSpinner="bubbles"
       loadingText="Caricamento prodotti...">
