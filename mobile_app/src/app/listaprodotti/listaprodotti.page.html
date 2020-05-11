@@ -13,9 +13,13 @@
     </ion-toolbar>
   </ion-header>
 
+  <ion-refresher slot="fixed" (ionRefresh)="caricaProdotti($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
   <ion-searchbar placeholder="Cerca un prodotto..." [(ngModel)]="testoRicerca" (ionChange)="effettuaRicerca($event.target.value)" debounce="500"></ion-searchbar>
 
-  <ion-list>
+  <ion-list *ngIf="!loading">
     <ion-item *ngFor="let prodotto of prodotti" [ngClass]="{'yellow': selezionati.get(prodotto.id)>0}">
       <ion-avatar slot="start">
         <img src="{{ prodotto.immagine }}">
@@ -30,6 +34,8 @@
       <ion-input iten-end type="number" [ngModel]="selezionati.get(prodotto.id)" (ngModelChange)="selezionati.set(prodotto.id, $event)" min="0" max="20"></ion-input>
     </ion-item>
   </ion-list>
+
+  <ion-spinner name="crescent" *ngIf="loading"></ion-spinner>
 
   <ion-infinite-scroll threshold="100px" (ionInfinite)="caricaAltri($event)">
     <ion-infinite-scroll-content

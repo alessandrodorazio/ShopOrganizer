@@ -1,0 +1,33 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Preferenze
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Preferenze</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-list>
+    <ion-item>
+      <ion-label>TOKEN</ion-label>
+      <ion-input [(ngModel)]="token"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Informazioni utente</ion-label>
+      <ion-toggle secondary></ion-toggle>
+    </ion-item>
+    <ion-item>
+      <ion-label>Notifications for Messages</ion-label>
+      <ion-toggle secondary></ion-toggle>
+    </ion-item>
+    <ion-item>
+      <ion-label>Notifications for Invites</ion-label>
+      <ion-toggle secondary></ion-toggle>
+    </ion-item>
+  </ion-list>
+</ion-content>

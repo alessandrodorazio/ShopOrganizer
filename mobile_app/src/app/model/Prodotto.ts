@@ -9,4 +9,6 @@ export class Prodotto {
     pezzatura: string;
     createdat: Date;
     updatedat: Date;
+
+    constructor() { }
 }

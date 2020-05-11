@@ -1,0 +1,30 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>login</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-item>
+    <ion-label>E-mail:</ion-label>
+    <ion-input [(ngModel)]="pref.email" type="email" placeholder="E-mail"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label>Password:</ion-label>
+    <ion-input [(ngModel)]="pref.password" placeholder="Password"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label>Salva credenziali:</ion-label>
+    <ion-toggle [(ngModel)]="stored">Salve</ion-toggle>
+  </ion-item>
+  <ion-item>
+    <ion-button (click)="doLogin()" >Login</ion-button>
+  </ion-item>
+  <ion-item>
+    Stato: <ion-text>{{ status }}</ion-text>
+  </ion-item>
+  <ion-item>
+    <ion-button routerLink="/tabs/preferenze" color="success" disabled="{{ !canGo }}">Vai alle Preferenze</ion-button>
+    <ion-button (click)="clear()" color="tertiary" disabled="{{ !wereSaved }}">Cancella salvate</ion-button>
+  </ion-item>
+</ion-content>

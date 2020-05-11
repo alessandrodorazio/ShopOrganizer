@@ -1,8 +1,8 @@
-import { RemoteService } from './../service/remote-service.service';
+import { RemoteService } from '../service/remote.service';
 import { Component, ViewChild, OnInit } from '@angular/core';
 import { IonInfiniteScroll } from '@ionic/angular';
 
-import { Prodotto } from '../model/Prodotto';
+import { Prodotto } from '../model/prodotto';
 
 @Component({
   selector: 'app-tab1',
@@ -18,12 +18,13 @@ export class ListaProdottiPage implements OnInit {
   testoRicerca = '';
   testoRicercaPrecedente = '';
   indiceInizio = 0;
+  loading: boolean;
 
   constructor(public remoteService: RemoteService) {}
 
   ngOnInit() {
     // Carica prodotti
-    this.caricaProdotti();
+    this.caricaProdotti(null);
   }
 
   // Events...
@@ -84,9 +85,18 @@ export class ListaProdottiPage implements OnInit {
 
   // Helpers...
 
-  private caricaProdotti() {
+  caricaProdotti(event: any) {
+    // Pull-to-refresh?
+    if (event === null) {
+      // No, primo caricamento...
+      this.loading = true;
+    } else {
+      // Si, svuota tutto (pull-to-refresh)
+      this.tabellaProdottiOriginale = this.tabellaProdotti = this.prodotti = [];
+    }
+
     // Avvia l'observable dal servizio per caricare tutti i prodotti...
-    return this.remoteService.getProdotti().subscribe((data: []) => {
+    this.remoteService.getProdotti().subscribe((data: []) => {
       data.forEach(element => {
         const p = element as Prodotto;
         // Aggiunge immagine casuale dagli asset
@@ -101,6 +111,15 @@ export class ListaProdottiPage implements OnInit {
       this.tabellaProdotti = this.tabellaProdottiOriginale;
       // Aggiorna l'elenco visualizzato
       this.aggiornaElenco();
+
+      setTimeout(() => {
+        // Se abbiamo effettuato un pull-to-refresh notifica termine
+        if (event != null) {
+          event.target.complete();
+        }
+        // Finito
+        this.loading = false;
+      }, 500);
     });
   }
 

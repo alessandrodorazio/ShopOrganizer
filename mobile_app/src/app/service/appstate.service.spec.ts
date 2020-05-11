@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
-import { RemoteService } from './remote-service.service';
+import { AppStateService } from './appstate.service';
 
-describe('RemoteService', () => {
+describe('AppStateService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: RemoteService = TestBed.get(RemoteService);
+    const service: AppStateService = TestBed.get(AppStateService);
     expect(service).toBeTruthy();
   });
 });

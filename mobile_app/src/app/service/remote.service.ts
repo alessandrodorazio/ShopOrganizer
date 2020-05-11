@@ -1,4 +1,7 @@
-import { Prodotto } from './../model/Prodotto';
+// Servizi remoti tramite API REST
+
+import { Prodotto } from '../model/prodotto';
+import { Utente } from '../model/utente';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
@@ -23,6 +26,15 @@ export class RemoteService {
   // Restituisce observable elenco di tutti i prodotti...
   getProdotti(): Observable<Prodotto[]> {
     return this.http.get<Prodotto[]>(this.baseurl + '/prodotti', this.httpOptions)
+    .pipe(
+      retry(1),
+      catchError(this.errorHandler)
+    );
+  }
+
+  // Da verificare il path
+  getPreferenzeUtente(email: string): Observable<Utente> {
+    return this.http.get<Utente>(this.baseurl + '/utente/' + email, this.httpOptions)
     .pipe(
       retry(1),
       catchError(this.errorHandler)
