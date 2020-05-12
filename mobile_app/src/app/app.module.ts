@@ -14,6 +14,8 @@ import { AppComponent } from './app.component';
 
 import { HttpClientModule  } from '@angular/common/http';
 
+import { NativeGeocoder } from '@ionic-native/native-geocoder/ngx';
+
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -22,7 +24,7 @@ import { HttpClientModule  } from '@angular/common/http';
     StatusBar,
     SplashScreen,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    RemoteService, AppStateService
+    RemoteService, AppStateService, NativeGeocoder
   ],
   bootstrap: [AppComponent]
 })

@@ -83,6 +83,10 @@ export class ListaProdottiPage implements OnInit {
     this.testoRicercaPrecedente = this.testoRicerca;
   }
 
+  calcola(event: any) {
+    // effettua il cacolo e propone risultati... TODO
+  }
+
   // Helpers...
 
   caricaProdotti(event: any) {

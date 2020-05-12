@@ -12,22 +12,86 @@
       <ion-title size="large">Preferenze</ion-title>
     </ion-toolbar>
   </ion-header>
-  <ion-list>
-    <ion-item>
-      <ion-label>TOKEN</ion-label>
-      <ion-input [(ngModel)]="token"></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-label>Informazioni utente</ion-label>
-      <ion-toggle secondary></ion-toggle>
-    </ion-item>
-    <ion-item>
-      <ion-label>Notifications for Messages</ion-label>
-      <ion-toggle secondary></ion-toggle>
-    </ion-item>
-    <ion-item>
-      <ion-label>Notifications for Invites</ion-label>
-      <ion-toggle secondary></ion-toggle>
-    </ion-item>
-  </ion-list>
+  
+  <ion-card>
+    <ion-card-header>
+      <ion-card-subtitle>{{ infoUtente.email }}</ion-card-subtitle>
+      <ion-card-title>Ciao, {{ infoUtente.nome }}!</ion-card-title>
+    </ion-card-header>
+  </ion-card>
+  
+  <ion-card>
+    <ion-card-header>
+      <ion-card-subtitle>Posizione di partenza</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-input [(ngModel)]="infoUtente.indirizzo" placeholder="Indirizzo" debounce="750" (ionChange)="localizzaIndirizzo($event)" [ngClass]="{'error': (!indirizzoValido && !infoUtente.usaPosAttuale)}" [disabled]="infoUtente.usaPosAttuale"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>Usa posizione corrente</ion-label>
+        <ion-toggle secondary [(ngModel)]="infoUtente.usaPosAttuale"></ion-toggle>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-subtitle>Negozi da mostrare: {{ infoUtente.maxRisultati }}</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-range min="1" max="50" color="secondary" [(ngModel)]="infoUtente.maxRisultati">
+          <ion-label slot="start">1</ion-label>
+          <ion-label slot="end">50</ion-label>
+        </ion-range>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-subtitle>Raggio di ricerca: {{ infoUtente.raggioKm }} Km</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-range min="1" max="30" step="0.5" color="secondary" [(ngModel)]="infoUtente.raggioKm">
+          <ion-label slot="start">1</ion-label>
+          <ion-label slot="end">30</ion-label>
+        </ion-range>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-subtitle>Ordinamento risulati</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-select [(ngModel)]="infoUtente.ordinamento">
+          <ion-select-option value="DISTANZA">Distanza</ion-select-option>
+          <ion-select-option value="PREZZO">Prezzo</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-subtitle>TOKEN (da rimuovere, debug)</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-input (ngModel)="token" readonly></ion-input>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-content>
+      <ion-button color="primary" (click)="salva($event)" (disabled)="indirizzoValido">Salva</ion-button>
+      <ion-button color="secondary" (click)="abbandona($event)">Abbandona</ion-button>
+    </ion-card-content>
+  </ion-card>
 </ion-content>

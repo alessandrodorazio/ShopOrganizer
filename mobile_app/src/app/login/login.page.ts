@@ -25,10 +25,10 @@ export class LoginPage implements OnInit {
 
   // Commentare questa funzione per evitare il redirect a "preferenze" in caso di token già presente
   ionViewWillEnter() {
-    const t = this.appState.get('TOKEN');
+    /*const t = this.appState.get('TOKEN');
     if (t != null) {
       this.router.navigate(['/tabs/preferenze']);
-    }
+    }*/
   }
 
   tryToLogin() {
@@ -58,17 +58,27 @@ export class LoginPage implements OnInit {
       }
       this.status = 'Login effettuato con successo! Token: [' + token + ']';
       this.appState.add(Utente.TOKEN_KEY, token);
+      this.appState.add(Utente.UTENTE_KEY, this.getUtente());
+      const u: Utente = this.appState.get(Utente.UTENTE_KEY);
+      console.log('Caricati: ' + JSON.stringify(u));
       this.canGo = true;
     } else {
       this.status = 'User/pass non validi!';
-      this.appState.remove(Utente.TOKEN_KEY);
+      this.appState.clear();
     }
   }
 
   clear() {
     this.storage.remove(Preferenze.SHOP_ORGANIZER_PREF_KEY);
-    this.appState.remove(Utente.TOKEN_KEY);
+    this.appState.clear();
     this.wereSaved = false;
     window.location.reload();
+  }
+
+  getUtente() {
+    const u = new Utente();
+    u.nome = 'Riccardo';
+    u.email = 'a@a.a';
+    return u;
   }
 }

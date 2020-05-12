@@ -15,12 +15,13 @@ export class AppStateService implements OnInit {
   constructor() { }
 
   add(name: string, obj: any) {
-    window.sessionStorage.setItem(name, obj);
+    window.sessionStorage.setItem(name, JSON.stringify(obj));
     this.dirty = true;
   }
 
   get(name: string): any {
-    return window.sessionStorage.getItem(name);
+    const o: string = window.sessionStorage.getItem(name);
+    return (o != null) ? JSON.parse(o) : null;
   }
 
   remove(name: string) {
