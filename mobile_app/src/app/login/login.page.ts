@@ -3,6 +3,7 @@ import { AppStateService } from './../service/appstate.service';
 import { Preferenze } from './../model/preferenze';
 import { Component, OnInit } from '@angular/core';
 import { Storage } from '@ionic/storage';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -16,10 +17,18 @@ export class LoginPage implements OnInit {
   status = '';
   canGo = false;
 
-  constructor(public storage: Storage, public appState: AppStateService) { }
+  constructor(public storage: Storage, public appState: AppStateService, public router: Router) { }
 
   ngOnInit() {
     this.tryToLogin();
+  }
+
+  // Commentare questa funzione per evitare il redirect a "preferenze" in caso di token già presente
+  ionViewWillEnter() {
+    const t = this.appState.get('TOKEN');
+    if (t != null) {
+      this.router.navigate(['/tabs/preferenze']);
+    }
   }
 
   tryToLogin() {
@@ -41,7 +50,7 @@ export class LoginPage implements OnInit {
   doLogin() {
     this.canGo = false;
     if (this.pref.email === 'a@a.a' && this.pref.password === 'pass') {
-      const token = 'Token-1234567890';
+      const token = 'Token-' + Math.random();
       if (this.stored && !this.wereSaved) {
         this.storage.set(Preferenze.SHOP_ORGANIZER_PREF_KEY, this.pref);
         this.wereSaved = true;
@@ -58,6 +67,7 @@ export class LoginPage implements OnInit {
 
   clear() {
     this.storage.remove(Preferenze.SHOP_ORGANIZER_PREF_KEY);
+    this.appState.remove(Utente.TOKEN_KEY);
     this.wereSaved = false;
     window.location.reload();
   }

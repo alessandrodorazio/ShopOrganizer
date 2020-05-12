@@ -24,7 +24,7 @@
     Stato: <ion-text>{{ status }}</ion-text>
   </ion-item>
   <ion-item>
-    <ion-button routerLink="/tabs/preferenze" color="success" disabled="{{ !canGo }}">Vai alle Preferenze</ion-button>
+    <ion-button routerLink="/tabs/preferenze" routerDirection="root" color="success" disabled="{{ !canGo }}">Vai alle Preferenze</ion-button>
     <ion-button (click)="clear()" color="tertiary" disabled="{{ !wereSaved }}">Cancella salvate</ion-button>
   </ion-item>
 </ion-content>
