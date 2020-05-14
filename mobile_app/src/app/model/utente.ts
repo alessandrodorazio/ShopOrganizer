@@ -1,24 +1,29 @@
-// Enum per tipologia ordinamento
-enum Ordinamento {
-    Distanza = 1,
-    Prezzo
-}
+import { Prodotto } from './prodotto';
 
 // Model utente
+
 export class Utente {
     email: string;
     nome: string;
-    posizione: string;
+    indirizzo: string;
+    lat: number;
+    long: number;
     usaPosAttuale: boolean;
     raggioKm: number;
-    ordinamento: Ordinamento;
+    maxRisultati: number;
+    ordinamento: string;
+    listaSalvata: Prodotto[] = [];
 
     constructor() {
-        this.email = this.nome = this.posizione = '';
+        this.email = this.nome = this.indirizzo = '';
         this.usaPosAttuale = true;
         this.raggioKm = 10;
-        this.ordinamento = Ordinamento.Prezzo;
+        this.maxRisultati = 10;
+        this.lat = this.long = 0;
+        this.ordinamento = 'PREZZO'; // 'DISTANZA'
+        this.listaSalvata = [];
     }
 
-    public static get TOKEN_KEY(): string { return 'TOKEN'; }
+    public static get TOKEN_KEY(): string { return 'TOKEN.key'; }
+    public static get UTENTE_KEY(): string { return 'UTENTE.key'; }
 }
