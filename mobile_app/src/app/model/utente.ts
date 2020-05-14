@@ -1,3 +1,5 @@
+import { Prodotto } from './prodotto';
+
 // Model utente
 
 export class Utente {
@@ -10,6 +12,7 @@ export class Utente {
     raggioKm: number;
     maxRisultati: number;
     ordinamento: string;
+    listaSalvata: Prodotto[] = [];
 
     constructor() {
         this.email = this.nome = this.indirizzo = '';
@@ -18,6 +21,7 @@ export class Utente {
         this.maxRisultati = 10;
         this.lat = this.long = 0;
         this.ordinamento = 'PREZZO'; // 'DISTANZA'
+        this.listaSalvata = [];
     }
 
     public static get TOKEN_KEY(): string { return 'TOKEN.key'; }

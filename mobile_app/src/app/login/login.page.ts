@@ -17,7 +17,7 @@ export class LoginPage implements OnInit {
   status = '';
   canGo = false;
 
-  constructor(public storage: Storage, public appState: AppStateService, public router: Router) { }
+  constructor(private storage: Storage, private appState: AppStateService, private router: Router) { }
 
   ngOnInit() {
     this.tryToLogin();

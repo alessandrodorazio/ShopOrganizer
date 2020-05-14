@@ -1,6 +1,9 @@
+import { Router } from '@angular/router';
+import { Utente } from './../model/utente';
+import { AppStateService } from './../service/appstate.service';
 import { RemoteService } from '../service/remote.service';
 import { Component, ViewChild, OnInit } from '@angular/core';
-import { IonInfiniteScroll } from '@ionic/angular';
+import { IonInfiniteScroll, AlertController } from '@ionic/angular';
 
 import { Prodotto } from '../model/prodotto';
 
@@ -20,7 +23,8 @@ export class ListaProdottiPage implements OnInit {
   indiceInizio = 0;
   loading: boolean;
 
-  constructor(public remoteService: RemoteService) {}
+  constructor(private remoteService: RemoteService, private alertController: AlertController,
+              private appState: AppStateService, private router: Router) {}
 
   ngOnInit() {
     // Carica prodotti
@@ -85,6 +89,30 @@ export class ListaProdottiPage implements OnInit {
 
   calcola(event: any) {
     // effettua il cacolo e propone risultati... TODO
+    console.log('Avvia calcolo...');
+  }
+
+  salvaLista(event: any) {
+    // salva la lista
+    const daSalvare = [];
+    // Estrae e copia i prodotti selezionati senza quantità
+    this.selezionati.forEach((qty: number, id: number) => {
+      if (qty > 0) {
+        daSalvare.push(this.tabellaProdottiOriginale.filter(p => p.id === id)[0]);
+      }
+    });
+
+    // Almeno uno estratto?
+    if (daSalvare.length === 0) {
+      this.notifica('Selezionare almeno un prodotto!');
+    } else {
+      // Si, aggiorna stato utente
+      const infoUtente = this.appState.get(Utente.UTENTE_KEY);
+      infoUtente.listaSalvata = daSalvare;
+      this.appState.add(Utente.UTENTE_KEY, infoUtente);
+
+      this.router.navigate(['/tabs/listasalvata']);
+    }
   }
 
   // Helpers...
@@ -133,6 +161,17 @@ export class ListaProdottiPage implements OnInit {
 
   private contiene(s: string) {
     return (s !== null) ? s.toUpperCase().includes(this.testoRicerca.toUpperCase()) : false;
+  }
+
+  async notifica(testo: string) {
+    // Mostra alert con messaggio
+    const alert = await this.alertController.create({
+      header: 'ShopOrganizer',
+      message: testo,
+      buttons: ['OK']
+    });
+    // Attende chiusura...
+    await alert.present();
   }
 
   // Da eliminare una volta che si hanno gli url delle immagini

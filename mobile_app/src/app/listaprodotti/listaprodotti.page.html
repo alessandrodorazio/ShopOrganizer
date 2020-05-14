@@ -1,5 +1,10 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
+    <ion-buttons slot="secondary">
+      <ion-button (click)="salvaLista($event)">
+        <ion-icon slot="start" name="save"></ion-icon>
+      </ion-button>
+    </ion-buttons>
     <ion-title>
       Lista Prodotti
     </ion-title>
@@ -9,7 +14,7 @@
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Lista Prodotti x</ion-title>
+      <ion-title size="large">Lista Prodotti</ion-title>
     </ion-toolbar>
   </ion-header>
 
@@ -32,6 +37,14 @@
         <h3>Quantit&aacute;: </h3>
       </ion-label>
       <ion-input iten-end type="number" [ngModel]="selezionati.get(prodotto.id)" (ngModelChange)="selezionati.set(prodotto.id, $event)" min="0" max="20"></ion-input>
+    </ion-item>
+  </ion-list>
+
+  <ion-list *ngIf="prodotti.length==0 && !loading">
+    <ion-item>
+      <ion-label>
+        <h2>Nessun prodotto disponibile</h2>
+      </ion-label>
     </ion-item>
   </ion-list>
 

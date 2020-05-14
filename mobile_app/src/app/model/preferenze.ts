@@ -1,4 +1,4 @@
-// Model preferenze
+// Model preferenze (utilizzato per salvare user/pass nello storage del dispositivo)
 
 export class Preferenze {
     email: string;
