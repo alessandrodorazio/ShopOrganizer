@@ -47,10 +47,12 @@ export class PreferenzePage implements OnInit {
         this.infoUtente.lat = coordinates[0].latitude;
         this.infoUtente.long = coordinates[0].longitude;
         this.indirizzoValido = true;
+        this.notifica('Coordinate: ' + coordinates[0].latitude + ' ' + coordinates[0].longitude);
       })
       .catch((error: any) => {
         console.log(error);
         this.indirizzoValido = false;
+        this.notifica('Indirizzo non trovato!');
       });
 
     // Codice mock da rimuovere!!
@@ -95,6 +97,17 @@ export class PreferenzePage implements OnInit {
                 }]
     });
 
+    await alert.present();
+  }
+
+  async notifica(testo: string) {
+    // Mostra alert con messaggio
+    const alert = await this.alertController.create({
+      header: 'ShopOrganizer',
+      message: testo,
+      buttons: ['OK']
+    });
+    // Attende chiusura...
     await alert.present();
   }
 }
