@@ -1,6 +1,9 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="secondary">
+      <ion-button (click)="mostraSelezionati($event)">
+        <ion-icon slot="start" [name]="!soloSelezionati ? 'checkmark' : 'list'"></ion-icon>
+      </ion-button>
       <ion-button (click)="salvaLista($event)">
         <ion-icon slot="start" name="save"></ion-icon>
       </ion-button>
@@ -43,7 +46,8 @@
   <ion-list *ngIf="prodotti.length==0 && !loading">
     <ion-item>
       <ion-label>
-        <h2>Nessun prodotto disponibile</h2>
+        <h2 *ngIf="!soloSelezionati">Nessun prodotto disponibile</h2>
+        <h2 *ngIf="soloSelezionati">Nessun prodotto selezionato</h2>
       </ion-label>
     </ion-item>
   </ion-list>

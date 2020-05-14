@@ -1,5 +1,10 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
+    <ion-buttons slot="secondary">
+      <ion-button (click)="condividi($event)">
+        <ion-icon slot="start" name="share"></ion-icon>
+      </ion-button>
+    </ion-buttons>
     <ion-title>
       Lista Salvata
     </ion-title>

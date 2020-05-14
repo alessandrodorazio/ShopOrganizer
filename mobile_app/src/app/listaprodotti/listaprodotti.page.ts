@@ -22,6 +22,7 @@ export class ListaProdottiPage implements OnInit {
   testoRicercaPrecedente = '';
   indiceInizio = 0;
   loading: boolean;
+  soloSelezionati = false;
 
   constructor(private remoteService: RemoteService, private alertController: AlertController,
               private appState: AppStateService, private router: Router) {}
@@ -112,6 +113,22 @@ export class ListaProdottiPage implements OnInit {
       this.appState.add(Utente.UTENTE_KEY, infoUtente);
 
       this.router.navigate(['/tabs/listasalvata']);
+    }
+  }
+
+  mostraSelezionati(event: any) {
+    this.soloSelezionati = !this.soloSelezionati;
+
+    if (this.soloSelezionati) {
+      this.prodotti = [];
+
+      this.selezionati.forEach((qty: number, id: number) => {
+        if (qty > 0) {
+          this.prodotti.push(this.tabellaProdottiOriginale.filter(p => p.id === id)[0]);
+        }
+      });
+    } else {
+      this.prodotti = this.tabellaProdotti;
     }
   }
 

@@ -35,6 +35,12 @@ export class ListaSalvataPage implements OnInit {
     this.notifica('Lista salvata nel profilo.');
   }
 
+  condividi(event: any) {
+    // TODO: attuare condivisione
+
+    this.notifica('Lista condivisa!');
+  }
+
   async notifica(testo: string) {
     // Mostra alert con messaggio
     const alert = await this.alertController.create({
