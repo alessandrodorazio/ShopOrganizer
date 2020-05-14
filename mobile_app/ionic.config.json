@@ -1,7 +1,8 @@
 {
   "name": "ShopOrganizer",
   "integrations": {
-    "capacitor": {}
+    "capacitor": {},
+    "cordova": {}
   },
   "type": "angular"
 }
