@@ -10,5 +10,13 @@ export class Prodotto {
     createdat: Date;
     updatedat: Date;
 
-    constructor() { }
+    constructor() {}
+}
+
+export class ProdottoPrezzato extends Prodotto {
+    prezzo: number;
+
+    constructor() {
+        super();
+    }
 }

@@ -25,7 +25,7 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  <ion-searchbar placeholder="Cerca un prodotto..." [(ngModel)]="testoRicerca" (ionChange)="effettuaRicerca($event.target.value)" debounce="500"></ion-searchbar>
+  <ion-searchbar placeholder="Cerca un prodotto..." [(ngModel)]="testoRicerca" (ionChange)="effettuaRicerca($event.target.value)" debounce="500" [disabled]="tabellaProdottiOriginale.length==0"></ion-searchbar>
 
   <ion-list *ngIf="!loading">
     <ion-item *ngFor="let prodotto of prodotti" [ngClass]="{'yellow': selezionati.get(prodotto.id)>0}">
@@ -39,7 +39,7 @@
       <ion-label float-right>
         <h3>Quantit&aacute;: </h3>
       </ion-label>
-      <ion-input iten-end type="number" [ngModel]="selezionati.get(prodotto.id)" (ngModelChange)="selezionati.set(prodotto.id, $event)" min="0" max="20"></ion-input>
+      <ion-input iten-end type="number" [ngModel]="selezionati.get(prodotto.id)" (ngModelChange)="selezionaProdotto(prodotto.id, $event)" min="0" max="20"></ion-input>
     </ion-item>
   </ion-list>
 
@@ -53,7 +53,7 @@
   </ion-list>
 
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button (click)="calcola($event)">
+    <ion-fab-button (click)="calcola($event)" [disabled]="!elementiSelezionati">
       <ion-icon name="cart"></ion-icon>
     </ion-fab-button>
   </ion-fab>

@@ -24,6 +24,15 @@ export class AppStateService implements OnInit {
     return (o != null) ? JSON.parse(o) : null;
   }
 
+  extract(name: string): any {
+    const out = this.get(name);
+    if (out !== null) {
+      this.remove(name);
+    }
+
+    return out;
+  }
+
   remove(name: string) {
     window.sessionStorage.removeItem(name);
     this.dirty = true;

@@ -23,6 +23,7 @@ export class ListaProdottiPage implements OnInit {
   indiceInizio = 0;
   loading: boolean;
   soloSelezionati = false;
+  elementiSelezionati = false;
 
   constructor(private remoteService: RemoteService, private alertController: AlertController,
               private appState: AppStateService, private router: Router) {}
@@ -89,8 +90,18 @@ export class ListaProdottiPage implements OnInit {
   }
 
   calcola(event: any) {
-    // effettua il cacolo e propone risultati... TODO
     console.log('Avvia calcolo...');
+     // salva la lista
+    const daSalvare = [];
+    // Estrae e copia i prodotti selezionati senza quantità
+    this.selezionati.forEach((qty: number, id: number) => {
+      if (qty > 0) {
+        daSalvare.push(this.tabellaProdottiOriginale.filter(p => p.id === id)[0]);
+      }
+    });
+
+    this.appState.add('ShopOrganizer.ProdottiSelezionati', daSalvare);
+    this.router.navigate(['/listanegozi']);
   }
 
   salvaLista(event: any) {
@@ -129,6 +140,18 @@ export class ListaProdottiPage implements OnInit {
       });
     } else {
       this.prodotti = this.tabellaProdotti;
+    }
+  }
+
+  aggiornaSelezione() {
+    this.elementiSelezionati = Array.from(this.selezionati.values()).some(qty => qty > 0);
+  }
+
+  selezionaProdotto(id: number, event: any) {
+    console.log('selezionaProdotto: ' + id + ' = ' + event);
+    if (event !== null) {
+      this.selezionati.set(id, event);
+      this.aggiornaSelezione();
     }
   }
 
