@@ -15,3 +15,12 @@ export class Negozio {
 
     constructor() {}
 }
+
+export class NegozioTotale extends Negozio {
+    totale: number;
+    distanza: number;
+
+    constructor() {
+        super();
+    }
+}

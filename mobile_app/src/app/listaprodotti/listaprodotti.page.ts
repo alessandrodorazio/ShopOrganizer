@@ -1,3 +1,4 @@
+import { ProdottoPrezzato } from './../model/prodotto';
 import { Router } from '@angular/router';
 import { Utente } from './../model/utente';
 import { AppStateService } from './../service/appstate.service';
@@ -96,7 +97,9 @@ export class ListaProdottiPage implements OnInit {
     // Estrae e copia i prodotti selezionati senza quantità
     this.selezionati.forEach((qty: number, id: number) => {
       if (qty > 0) {
-        daSalvare.push(this.tabellaProdottiOriginale.filter(p => p.id === id)[0]);
+        const toSave: ProdottoPrezzato = this.tabellaProdottiOriginale.filter(p => p.id === id)[0] as any;
+        toSave.quantita = qty;
+        daSalvare.push(toSave);
       }
     });
 

@@ -1,7 +1,7 @@
-import { Negozio } from './../model/negozio';
+import { Utente } from './../model/utente';
+import { Negozio, NegozioTotale } from './../model/negozio';
 import { RemoteService } from './../service/remote.service';
-import { Prodotto, ProdottoPrezzato } from './../model/prodotto';
-import { Router } from '@angular/router';
+import { ProdottoPrezzato } from './../model/prodotto';
 import { AppStateService } from './../service/appstate.service';
 import { Component, OnInit } from '@angular/core';
 
@@ -11,20 +11,30 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./listanegozi.page.scss'],
 })
 export class ListaNegoziPage implements OnInit {
-  selezionati: Prodotto[] = [];
+  selezionati: ProdottoPrezzato[] = [];
+  risultato: NegozioTotale[] = [];
+  risultatoView: NegozioTotale[] = [];
   negozi: Negozio[] = [];
+  infoUtente: Utente;
+  loading: boolean;
 
-  constructor(private appState: AppStateService, private remoteService: RemoteService, private router: Router) { }
+  constructor(private appState: AppStateService, private remoteService: RemoteService) { }
 
   ngOnInit() {
   }
 
   ionViewWillEnter() {
+    this.infoUtente = this.appState.get(Utente.UTENTE_KEY);
     this.selezionati = this.appState.extract('ShopOrganizer.ProdottiSelezionati');
-    this.caricaNegozi();
+    if (this.selezionati !== null) {
+      this.caricaNegozi();
+    } else {
+      this.loading = false;
+    }
   }
 
   caricaNegozi() {
+    this.loading = true;
     this.remoteService.getNegozi().subscribe((data: []) => {
       data.forEach(el => {
         const n = new Negozio();
@@ -34,6 +44,9 @@ export class ListaNegoziPage implements OnInit {
 
         prop = 'nome';
         n.nome = el[prop];
+
+        prop = 'citta';
+        n.citta = el[prop];
 
         // copia i prodotti
         prop = 'prodotti';
@@ -62,12 +75,62 @@ export class ListaNegoziPage implements OnInit {
         this.negozi.push(n);
       });
 
-      console.log('Negozi = ' + JSON.stringify(this.negozi));
-      this.calcola();
+      this.calcolaTotali();
+
+      this.loading = false;
     });
   }
 
-  calcola() {
+  calcolaTotali() {
+    this.risultato = [];
+    this.negozi.forEach(n => {
+      const nt: NegozioTotale = n as any;
+      nt.totale = 0;
+      nt.distanza = this.random(0.1, 20);
+      this.selezionati.forEach(sel => {
+        nt.totale += n.prodotti.filter(p => p.id === sel.id).reduce((tot, el) => {
+          return tot + (el.prezzo * sel.quantita);
+        }, 0);
+      });
 
+      this.risultato.push(nt);
+    });
+
+    this.ordina(null);
+  }
+
+  ordina(event: any) {
+    // riordina l'elenco in base alla preferenza
+    if (event !== null) {
+      this.infoUtente.ordinamento = event.target.value;
+    }
+
+    if (this.infoUtente.ordinamento === 'PREZZO') {
+      this.risultatoView =  Object.assign([], this.risultato.sort((a, b) => {
+        const d = a.totale - b.totale;
+        // a pari prezzo preferisci la distanza
+        return (d === 0) ? (a.distanza - b.distanza) : d;
+      }));
+
+      this.risultatoView = this.risultatoView.splice(0, this.infoUtente.maxRisultati);
+    } else {
+      this.risultatoView = Object.assign([], this.risultato.sort((a, b) => {
+        const d = a.distanza - b.distanza;
+        // a pari distanza preferisci il prezzo
+        return (d === 0) ? (a.totale - b.totale) : d;
+      }));
+
+      this.risultatoView = this.risultatoView.splice(0, this.infoUtente.maxRisultati);
+    }
+  }
+
+  risultatiPresenti(): boolean {
+    return ((this.risultato || []).length > 0);
+  }
+
+  // DA ELIMINARE QUANDO VERRANNO RILEVATE LE DISTANZE DALLE API REST (mock)
+
+  private random(minInc: number, maxEsc: number) {
+    return Math.floor(Math.random() * (maxEsc - minInc)) + minInc;
   }
 }

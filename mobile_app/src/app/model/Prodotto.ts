@@ -15,6 +15,7 @@ export class Prodotto {
 
 export class ProdottoPrezzato extends Prodotto {
     prezzo: number;
+    quantita: number;
 
     constructor() {
         super();
