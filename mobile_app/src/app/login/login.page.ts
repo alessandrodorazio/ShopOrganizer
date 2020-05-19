@@ -99,7 +99,7 @@ export class LoginPage implements OnInit {
       return response.json(); // parses JSON response into native JavaScript objects
     }
     
-    postData('http://127.0.0.1:8000/api/login', {'email': this.user.email, 'password': this.user.password})
+    postData('https://shoporganizer.herokuapp.com/public/api/login', {'email': this.user.email, 'password': this.user.password})
       .then(data => {
         console.log(data); // JSON data parsed by `response.json()` call
 
