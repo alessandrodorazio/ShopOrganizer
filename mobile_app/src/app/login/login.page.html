@@ -1,30 +1,40 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>login</ion-title>
+    <ion-title>Login</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-item>
-    <ion-label>E-mail:</ion-label>
-    <ion-input [(ngModel)]="pref.email" type="email" placeholder="E-mail"></ion-input>
+<ion-content text-center class="vertical-align-content" fullscreen>
+  <img src="../../assets/images/logo.png" />
+  <ion-item class="ion-no-margin ion-no-padding">
+    <ion-label class="ion-margin-start" position="stacked">E-mail</ion-label>
+    <ion-input class="ion-margin-start" [(ngModel)]="pref.email" type="email" placeholder="E-mail"></ion-input>
   </ion-item>
-  <ion-item>
-    <ion-label>Password:</ion-label>
-    <ion-input [(ngModel)]="pref.password" placeholder="Password"></ion-input>
+  <ion-item class="ion-no-margin ion-no-padding">
+    <ion-label class="ion-margin-start" position="floating">Password</ion-label>
+    <ion-input class="ion-margin-start" [(ngModel)]="pref.password" type="password" placeholder="Password"></ion-input>
   </ion-item>
-  <ion-item>
-    <ion-label>Salva credenziali:</ion-label>
-    <ion-toggle [(ngModel)]="stored">Salve</ion-toggle>
-  </ion-item>
-  <ion-item>
-    <ion-button (click)="doLogin()" >Login</ion-button>
-  </ion-item>
-  <ion-item>
-    Stato: <ion-text>{{ status }}</ion-text>
-  </ion-item>
-  <ion-item>
-    <ion-button routerLink="/tabs/preferenze" routerDirection="root" color="success" disabled="{{ !canGo }}">Vai alle Preferenze</ion-button>
-    <ion-button (click)="clear()" color="tertiary" disabled="{{ !wereSaved }}">Cancella salvate</ion-button>
-  </ion-item>
+  <ion-row class="ion-margin-top ion-margin-start ion-margin-end">
+    <ion-col>
+      <ion-button fill="outline" (click)="doLogin()">
+        <ion-icon slot="start" name="log-in-outline"></ion-icon>
+        Registrati
+      </ion-button>
+    </ion-col>
+    <ion-col text-right>
+      <ion-button (click)="doLogin()" class="ion-float-right">
+        <ion-icon slot="end" name="log-in-outline"></ion-icon>
+        Login
+      </ion-button>
+    </ion-col>
+  </ion-row>
+  <ion-row class="ion-margin-start ion-margin-end">
+    <ion-col>
+      <ion-button expand="block">
+        <ion-icon slot="start" name="logo-facebook"></ion-icon>
+        Accedi con Facebook
+      </ion-button>
+    </ion-col>
+  </ion-row>
+    
 </ion-content>
