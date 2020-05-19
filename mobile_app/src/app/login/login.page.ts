@@ -48,6 +48,28 @@ export class LoginPage implements OnInit {
   }
 
   doLogin() {
+    async function postData(url = '', data = {}) {
+      const response = await fetch(url, {
+        method: 'GET', // *GET, POST, PUT, DELETE, etc.
+        mode: 'cors', // no-cors, *cors, same-origin
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'same-origin', // include, *same-origin, omit
+        headers: {
+          'Content-Type': 'application/json'
+          // 'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        redirect: 'follow', // manual, *follow, error
+        referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+      });
+      return response.json(); // parses JSON response into native JavaScript objects
+    }
+    
+    postData('http://127.0.0.1:8001/api/me')
+      .then(data => {
+        console.log(data); // JSON data parsed by `response.json()` call
+      });
+
+
     this.canGo = false;
     if (this.pref.email === 'a@a.a' && this.pref.password === 'pass') {
       const token = 'Token-' + Math.random();
