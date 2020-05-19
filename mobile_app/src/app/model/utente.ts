@@ -5,6 +5,7 @@ import { Prodotto } from './prodotto';
 export class Utente {
     email: string;
     nome: string;
+    password: string;
     indirizzo: string;
     lat: number;
     long: number;
@@ -15,7 +16,7 @@ export class Utente {
     listaSalvata: Prodotto[] = [];
 
     constructor() {
-        this.email = this.nome = this.indirizzo = '';
+        this.email = this.nome = this.indirizzo = this.password = '';
         this.usaPosAttuale = true;
         this.raggioKm = 10;
         this.maxRisultati = 10;

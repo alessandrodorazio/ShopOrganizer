@@ -22,15 +22,13 @@ export class PreferenzePage implements OnInit {
   }
 
   ionViewWillEnter() {
-    const t = this.appState.get(Utente.TOKEN_KEY);
-    if (t != null) {
-      this.token = t;
-      this.infoUtente = this.appState.get(Utente.UTENTE_KEY);
-      console.log('Info Utente: ' + JSON.stringify(this.infoUtente));
-    } else {
-      this.token = null;
-      this.infoUtente = new Utente();
+    
+    this.token = localStorage.getItem('token');
+    this.router.navigate(['/login']);
+    if(localStorage.getItem("token") === null) {
       this.router.navigate(['/login']);
+    }else{
+      console.log(this.token);
     }
   }
 

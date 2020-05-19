@@ -8,15 +8,15 @@
   <img src="../../assets/images/logo.png" />
   <ion-item class="ion-no-margin ion-no-padding">
     <ion-label class="ion-margin-start" position="stacked">E-mail</ion-label>
-    <ion-input class="ion-margin-start" [(ngModel)]="pref.email" type="email" placeholder="E-mail"></ion-input>
+    <ion-input class="ion-margin-start" [(ngModel)]="user.email" type="email" placeholder="E-mail"></ion-input>
   </ion-item>
   <ion-item class="ion-no-margin ion-no-padding">
     <ion-label class="ion-margin-start" position="floating">Password</ion-label>
-    <ion-input class="ion-margin-start" [(ngModel)]="pref.password" type="password" placeholder="Password"></ion-input>
+    <ion-input class="ion-margin-start" [(ngModel)]="user.password" type="password" placeholder="Password"></ion-input>
   </ion-item>
   <ion-row class="ion-margin-top ion-margin-start ion-margin-end">
     <ion-col>
-      <ion-button fill="outline" (click)="doLogin()">
+      <ion-button fill="outline" (click)="register()">
         <ion-icon slot="start" name="log-in-outline"></ion-icon>
         Registrati
       </ion-button>

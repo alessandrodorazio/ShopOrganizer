@@ -1,9 +1,33 @@
 <ion-header>
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button text=""></ion-back-button>
+    </ion-buttons>
     <ion-title>Registrati</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-
+<ion-content text-center class="vertical-align-content" fullscreen>
+  <img src="../../assets/images/logo.png" />
+  <ion-item class="ion-no-margin ion-no-padding">
+    <ion-label class="ion-margin-start" position="stacked">E-mail</ion-label>
+    <ion-input class="ion-margin-start" type="email" [(ngModel)]="user.email" placeholder="E-mail"></ion-input>
+  </ion-item>
+  <ion-item class="ion-no-margin ion-no-padding">
+    <ion-label class="ion-margin-start" position="floating">Password</ion-label>
+    <ion-input class="ion-margin-start" type="password" [(ngModel)]="user.password" placeholder="Password"></ion-input>
+  </ion-item>
+  <ion-item class="ion-no-margin ion-no-padding">
+    <ion-label class="ion-margin-start" position="floating">Conferma password</ion-label>
+    <ion-input class="ion-margin-start" type="password" [(ngModel)]="passwordConfirm" placeholder="Conferma password"></ion-input>
+  </ion-item>
+  <ion-row class="ion-margin-top ion-margin-start ion-margin-end">
+    <ion-col>
+      <ion-button expand="block" fill="outline" (click)="register()">
+        <ion-icon slot="start" name="log-in-outline"></ion-icon>
+        Registrati
+      </ion-button>
+      <p>Sei già registrato? <a routerLink="/login" routerDirection="back">Accedi subito.</a></p>
+    </ion-col>
+  </ion-row>
 </ion-content>
