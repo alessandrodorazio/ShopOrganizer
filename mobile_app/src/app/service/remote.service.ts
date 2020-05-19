@@ -32,6 +32,15 @@ export class RemoteService {
     );
   }
 
+  // restituisce l'lelenco dei negozi...
+  getNegozi(): Observable<any[]> {
+    return this.http.get<any[]>(this.baseurl + '/negozi', this.httpOptions)
+    .pipe(
+      retry(1),
+      catchError(this.errorHandler)
+    );
+  }
+
   // Da verificare il path
   getPreferenzeUtente(email: string): Observable<Utente> {
     return this.http.get<Utente>(this.baseurl + '/utente/' + email, this.httpOptions)

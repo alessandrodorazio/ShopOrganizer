@@ -1,0 +1,49 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/listaprodotti"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Lista Negozi</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content *ngIf="risultatiPresenti() && !loading">
+  <ion-item>
+    <ion-label>Ordina risultati per</ion-label>
+    <ion-select value="{{ infoUtente?.ordinamento }}" (ionChange)="ordina($event)">
+      <ion-select-option value="DISTANZA">Distanza</ion-select-option>
+      <ion-select-option value="PREZZO">Prezzo</ion-select-option>
+    </ion-select>
+  </ion-item>
+  <ion-card *ngFor="let negozio of risultatoView; let idx of index">
+    <ion-card-header>
+      <ion-grid>
+        <ion-row>
+          <ion-col><ion-card-title>{{ negozio.nome }}</ion-card-title></ion-col>
+          <ion-col class="text-right"><ion-card-title>€ {{ negozio.totale | number: '1.2-2' }}</ion-card-title></ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-header>
+  
+    <ion-card-content>
+      <ion-grid>
+        <ion-row>
+          <ion-col>{{ negozio.distanza }} Km</ion-col>
+          <ion-col class="text-right"><ion-button size="small" fill="clear">Prezzi</ion-button></ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+
+<ion-content *ngIf="loading">
+  <ion-spinner name="crescent"></ion-spinner>
+</ion-content>
+
+<ion-content *ngIf="!risultatiPresenti() && !loading">
+  <ion-item>
+    <ion-label>
+      <h2>Nessun negozio disponibile</h2>
+    </ion-label>
+  </ion-item>
+</ion-content>
