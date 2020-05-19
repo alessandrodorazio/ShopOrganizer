@@ -17,14 +17,27 @@ import { HttpClientModule  } from '@angular/common/http';
 import { NativeGeocoder } from '@ionic-native/native-geocoder/ngx';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [
+    AppComponent,
+  ],
   entryComponents: [],
-  imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule, HttpClientModule, IonicStorageModule.forRoot()],
+  imports: [
+    BrowserModule,
+    IonicModule.forRoot(),
+    AppRoutingModule,
+    HttpClientModule,
+    IonicStorageModule.forRoot()
+  ],
   providers: [
     StatusBar,
     SplashScreen,
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    RemoteService, AppStateService, NativeGeocoder
+    {
+      provide: RouteReuseStrategy,
+      useClass: IonicRouteStrategy
+    },
+    RemoteService,
+    AppStateService,
+    NativeGeocoder
   ],
   bootstrap: [AppComponent]
 })

@@ -1,3 +1,4 @@
+import { DettaglioprodottiPageModule } from './dettaglioprodotti/dettaglioprodotti.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -13,7 +14,8 @@ import { ListaNegoziPage } from './listanegozi.page';
     CommonModule,
     FormsModule,
     IonicModule,
-    ListaNegoziPageRoutingModule
+    ListaNegoziPageRoutingModule,
+    DettaglioprodottiPageModule
   ],
   declarations: [ListaNegoziPage]
 })

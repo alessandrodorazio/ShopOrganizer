@@ -1,0 +1,35 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Dettaglio Prodotti</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismissModal()">Chiudi</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card>
+    <ion-card-header>
+      <ion-card-subtitle>{{ negozio.citta }}</ion-card-subtitle>
+      <ion-card-title>{{ negozio.nome }}</ion-card-title>
+    </ion-card-header>
+  
+    <ion-card-content>
+      Spesa totale € {{ negozio.totale | number: '1.2-2' }}
+    </ion-card-content>
+  </ion-card>
+  <ion-list>
+    <ion-item *ngFor="let prodotto of selezionati">
+      <ion-avatar slot="start">
+        <img src="{{ prodotto.immagine }}">
+      </ion-avatar>
+      <ion-label>
+        <h2>{{ prodotto.nome }}&nbsp;{{ prodotto.marca }}</h2>
+        <p>{{ prodotto.pezzatura }}</p>
+      </ion-label>
+      <ion-label float-right>
+        <h3>{{ prodotto.quantita }} x € {{ prezzoProdotto(prodotto.id) | number: '1.2-2' }} = € {{ (prodotto.quantita*prezzoProdotto(prodotto.id)) | number: '1.2-2' }} </h3>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>

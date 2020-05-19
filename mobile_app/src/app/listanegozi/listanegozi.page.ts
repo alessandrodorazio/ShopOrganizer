@@ -1,9 +1,11 @@
+import { DettaglioprodottiPage } from './dettaglioprodotti/dettaglioprodotti.page';
 import { Utente } from './../model/utente';
 import { Negozio, NegozioTotale } from './../model/negozio';
 import { RemoteService } from './../service/remote.service';
 import { ProdottoPrezzato } from './../model/prodotto';
 import { AppStateService } from './../service/appstate.service';
 import { Component, OnInit } from '@angular/core';
+import { ModalController } from '@ionic/angular';
 
 @Component({
   selector: 'app-listanegozi',
@@ -15,10 +17,11 @@ export class ListaNegoziPage implements OnInit {
   risultato: NegozioTotale[] = [];
   risultatoView: NegozioTotale[] = [];
   negozi: Negozio[] = [];
+  negozioDettaglio: Negozio;
   infoUtente: Utente;
   loading: boolean;
 
-  constructor(private appState: AppStateService, private remoteService: RemoteService) { }
+  constructor(private appState: AppStateService, private remoteService: RemoteService, private modalController: ModalController) { }
 
   ngOnInit() {
   }
@@ -48,6 +51,12 @@ export class ListaNegoziPage implements OnInit {
         prop = 'citta';
         n.citta = el[prop];
 
+        prop = 'via';
+        n.via = el[prop];
+
+        prop = 'stato';
+        n.stato = el[prop];
+
         // copia i prodotti
         prop = 'prodotti';
         const prodotti = el[prop] as [];
@@ -64,6 +73,9 @@ export class ListaNegoziPage implements OnInit {
 
           prop = 'marca';
           newProd.marca = prodotto[prop];
+
+          prop = 'pezzatura';
+          newProd.pezzatura = prodotto[prop];
 
           prop = 'pivot';
           const prop2 = 'prezzo';
@@ -126,6 +138,24 @@ export class ListaNegoziPage implements OnInit {
 
   risultatiPresenti(): boolean {
     return ((this.risultato || []).length > 0);
+  }
+
+  async showModal() {
+    console.log('ok 2!');
+    const modal = await this.modalController.create({
+      component: DettaglioprodottiPage,
+      componentProps: {
+        negozio: this.negozioDettaglio,
+        selezionati: this.selezionati
+      }
+    });
+
+    return await modal.present();
+  }
+
+  apriDettaglio(id: number) {
+    this.negozioDettaglio = this.risultatoView.filter(n => (n.id === id))[0];
+    this.showModal();
   }
 
   // DA ELIMINARE QUANDO VERRANNO RILEVATE LE DISTANZE DALLE API REST (mock)

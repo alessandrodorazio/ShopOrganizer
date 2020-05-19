@@ -29,7 +29,7 @@
       <ion-grid>
         <ion-row>
           <ion-col>{{ negozio.distanza }} Km</ion-col>
-          <ion-col class="text-right"><ion-button size="small" fill="clear">Prezzi</ion-button></ion-col>
+          <ion-col class="text-right"><ion-button size="small" fill="clear" (click)="apriDettaglio(negozio.id)">Prezzi</ion-button></ion-col>
         </ion-row>
       </ion-grid>
     </ion-card-content>
