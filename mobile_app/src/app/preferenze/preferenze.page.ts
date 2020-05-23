@@ -22,10 +22,9 @@ export class PreferenzePage implements OnInit {
   }
 
   ionViewWillEnter() {
-    
+
     this.token = localStorage.getItem('token');
-    this.router.navigate(['/login']);
-    if(localStorage.getItem("token") === null) {
+    if(localStorage.getItem('token') === null) {
       this.router.navigate(['/login']);
     }else{
       console.log(this.token);
