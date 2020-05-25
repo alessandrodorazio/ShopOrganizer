@@ -106,7 +106,7 @@ export class RegisterPage implements OnInit {
         if(data.access_token) {
           localStorage.setItem('token', data.access_token);
           localStorage.setItem('user', JSON.stringify(data.user));
-          this.router.navigate(['/preferenze']);
+          this.router.navigate(['/tabs/preferenze']);
         } else {
           this.emailAlreadyTaken();
         }

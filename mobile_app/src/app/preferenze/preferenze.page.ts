@@ -49,7 +49,7 @@ export class PreferenzePage implements OnInit {
       .catch((error: any) => {
         console.log(error);
         this.indirizzoValido = false;
-        this.notifica('Indirizzo non trovato!');
+        this.notifica(error);
       });
 
     // Codice mock da rimuovere!!

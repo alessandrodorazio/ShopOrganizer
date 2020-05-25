@@ -174,8 +174,6 @@ export class ListaProdottiPage implements OnInit {
     this.remoteService.getProdotti().subscribe((data: []) => {
       data.forEach(element => {
         const p = element as Prodotto;
-        // Aggiunge immagine casuale dagli asset
-        p.immagine = 'assets/product/' + this.random(0, 6) + '.jpg';
         // Carica nella tabella originale (completa)
         this.tabellaProdottiOriginale.push(p);
         // inizializza mappa delle quantità
