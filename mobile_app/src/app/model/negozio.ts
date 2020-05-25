@@ -13,7 +13,9 @@ export class Negozio {
     coordinate: Point;
     prodotti: ProdottoPrezzato[];
 
-    constructor() {}
+    constructor() {
+        this.coordinate = new Point();
+    }
 }
 
 export class NegozioTotale extends Negozio {

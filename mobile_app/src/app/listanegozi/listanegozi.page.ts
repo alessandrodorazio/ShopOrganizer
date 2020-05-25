@@ -28,6 +28,7 @@ export class ListaNegoziPage implements OnInit {
 
   ionViewWillEnter() {
     this.infoUtente = this.appState.get(Utente.UTENTE_KEY);
+    console.log('InfoUtente load: ' + JSON.stringify(this.infoUtente));
     this.selezionati = this.appState.extract('ShopOrganizer.ProdottiSelezionati');
     if (this.selezionati !== null) {
       this.caricaNegozi();
@@ -57,6 +58,11 @@ export class ListaNegoziPage implements OnInit {
         prop = 'stato';
         n.stato = el[prop];
 
+        prop = 'coordinate';
+        const prop2 = 'coordinates';
+        n.coordinate.long = el[prop][prop2][0];
+        n.coordinate.lat = el[prop][prop2][1];
+
         // copia i prodotti
         prop = 'prodotti';
         const prodotti = el[prop] as [];
@@ -78,8 +84,8 @@ export class ListaNegoziPage implements OnInit {
           newProd.pezzatura = prodotto[prop];
 
           prop = 'pivot';
-          const prop2 = 'prezzo';
-          newProd.prezzo = prodotto[prop][prop2];
+          const prop3 = 'prezzo';
+          newProd.prezzo = prodotto[prop][prop3];
 
           n.prodotti.push(newProd);
         });
@@ -98,7 +104,7 @@ export class ListaNegoziPage implements OnInit {
     this.negozi.forEach(n => {
       const nt: NegozioTotale = n as any;
       nt.totale = 0;
-      nt.distanza = this.random(0.1, 20);
+      nt.distanza = this.calcolaDistanzaInKm(this.infoUtente.lat, this.infoUtente.long, n.coordinate.lat, n.coordinate.long);
       this.selezionati.forEach(sel => {
         nt.totale += n.prodotti.filter(p => p.id === sel.id).reduce((tot, el) => {
           return tot + (el.prezzo * sel.quantita);
@@ -158,9 +164,25 @@ export class ListaNegoziPage implements OnInit {
     this.showModal();
   }
 
-  // DA ELIMINARE QUANDO VERRANNO RILEVATE LE DISTANZE DALLE API REST (mock)
+  aggiustaDistanza(dist: number): string {
+    return (dist < 1) ? ((dist * 1000).toFixed(0) + 'm') : (dist.toFixed(2) + 'Km');
+  }
 
-  private random(minInc: number, maxEsc: number) {
-    return Math.floor(Math.random() * (maxEsc - minInc)) + minInc;
+  private calcolaDistanzaInKm(lat1: number, lon1: number, lat2: number, lon2: number) {
+    const R = 6371; // Radius of the earth in km
+    const dLat = this.deg2rad(lat2 - lat1);  // deg2rad below
+    const dLon = this.deg2rad(lon2 - lon1);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(this.deg2rad(lat1)) * Math.cos(this.deg2rad(lat2)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const d = R * c; // Distance in km
+
+    return d;
+  }
+
+  private deg2rad(deg: number) {
+    return deg * (Math.PI / 180.0);
   }
 }

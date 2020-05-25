@@ -1,5 +1,6 @@
 export class Point {
-    coordinates: number[];
+    lat: number;
+    long: number;
 
     constructor() {}
 }

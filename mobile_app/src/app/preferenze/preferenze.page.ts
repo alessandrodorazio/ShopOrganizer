@@ -22,11 +22,10 @@ export class PreferenzePage implements OnInit {
   }
 
   ionViewWillEnter() {
-
     this.token = localStorage.getItem('token');
-    if(localStorage.getItem('token') === null) {
+    if (localStorage.getItem('token') === null) {
       this.router.navigate(['/login']);
-    }else{
+    } else {
       console.log(this.token);
     }
   }
@@ -59,9 +58,16 @@ export class PreferenzePage implements OnInit {
   }
 
   salva(event: any) {
+    // Se assenti usa coordinate mock (0,0) indica di usare  la posizione attuale
+    if (this.infoUtente.lat === 0 && this.infoUtente.long === 0) {
+      this.infoUtente.lat = 42.365300;
+      this.infoUtente.long = 13.364451;
+    }
+
     if (this.somethingChanged()) {
       // è più un replace...
       this.appState.add(Utente.UTENTE_KEY, this.infoUtente);
+      console.log('InfoUtente: ' + JSON.stringify(this.infoUtente));
     }
   }
 
