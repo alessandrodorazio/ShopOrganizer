@@ -31,9 +31,12 @@ export class PreferenzePage implements OnInit {
     if (localStorage.getItem('token') === null) {
       this.router.navigate(['/login']);
     } else {
-      console.log(this.token);
-      this.infoUtente.email = "me@alessandrodorazio.it";
-      this.infoUtente.nome = "Alessandro";
+      let user = JSON.parse(localStorage.getItem('user'));
+      this.infoUtente.email = user.email;
+      this.infoUtente.nome = user.nome;
+      this.infoUtente.raggioKm = user.raggio_km;
+      this.infoUtente.maxRisultati = user.max_negozi;
+      this.infoUtente.ordinamento = user.preferenza_filtro==1?'PREZZO':'DISTANZA'
     }
   }
 
@@ -71,6 +74,46 @@ export class PreferenzePage implements OnInit {
       this.infoUtente.long = 13.364451;
     }
 
+    let token = localStorage.getItem('token');
+    let user = JSON.parse(localStorage.getItem('user'));
+
+    let body = {
+      "user": {
+        "nome": this.infoUtente.nome,
+        "raggio_km": this.infoUtente.raggioKm,
+        "max_negozi": this.infoUtente.maxRisultati,
+        "preferenza_filtro": this.infoUtente.ordinamento==="PREZZO"?1:2,
+        "lista": {
+          "prodotti": []
+        }
+      }
+    };
+
+
+    async function postData(url = '', data = {}) {
+      const response = await fetch(url, {
+        method: 'PUT', // *GET, POST, PUT, DELETE, etc.
+        mode: 'cors', // no-cors, *cors, same-origin
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'same-origin', // include, *same-origin, omit
+        headers: {
+          'Content-Type': 'application/json'
+          // 'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        redirect: 'follow', // manual, *follow, error
+        referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+        body: JSON.stringify(data)
+      });
+      return response.json(); // parses JSON response into native JavaScript objects
+    }
+    console.log('https://shoporganizer.herokuapp.com/public/api/users/' + user.id + '?token=' + token);
+    postData('https://shoporganizer.herokuapp.com/public/api/users/' + user.id + '?token=' + token, body)
+      .then(data => {
+        localStorage.removeItem('user');
+        localStorage.setItem('user', JSON.stringify(data.user));
+        //TODO show alert
+      }).catch(err => console.error(err));
+
     if (this.somethingChanged()) {
       // è più un replace...
       this.appState.add(Utente.UTENTE_KEY, this.infoUtente);
@@ -78,6 +121,7 @@ export class PreferenzePage implements OnInit {
     }
   }
 
+     
   abbandona(event: any) {
     if (this.somethingChanged()) {
       this.conferma();

@@ -50,6 +50,14 @@
     <ion-item class="ion-no-padding">
       <h3 class="ion-margin-start">Preferenze</h3>
     </ion-item>
+
+    <ion-item class="ion-no-padding">
+      <ion-icon class="ion-margin-start mr-5px" color="primary" name="person-circle-outline"></ion-icon>
+      <ion-label class="ion-margin-end">
+        Nome
+      </ion-label>
+        <ion-input type="text" [(ngModel)]="infoUtente.nome" maxlength="15" placeholder="Username"></ion-input>
+    </ion-item>
   
     <ion-item class="ion-no-padding">
       <ion-icon class="ion-margin-start mr-5px" color="primary" name="search-circle-outline"></ion-icon>
