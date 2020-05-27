@@ -53,6 +53,7 @@ export class ListaProdottiPage implements OnInit {
   private aggiornaElenco() {
     if (this.tabellaProdotti.length === 0) { return; }
 
+    
     // Elementi per pagina
     const EL_PER_PAGINA = 20;
 

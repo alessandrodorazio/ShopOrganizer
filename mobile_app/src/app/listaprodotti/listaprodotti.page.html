@@ -28,18 +28,29 @@
   <ion-searchbar placeholder="Cerca un prodotto..." [(ngModel)]="testoRicerca" (ionChange)="effettuaRicerca($event.target.value)" debounce="500" [disabled]="tabellaProdottiOriginale.length==0"></ion-searchbar>
 
   <ion-list *ngIf="!loading">
-    <ion-item *ngFor="let prodotto of prodotti" [ngClass]="{'yellow': selezionati.get(prodotto.id)>0}">
+    <ion-item *ngFor="let prodotto of prodotti" [ngClass]="{'selected': selezionati.get(prodotto.id)>0}">
       <ion-avatar slot="start">
         <img src="{{ prodotto.immagine }}">
       </ion-avatar>
       <ion-label>
-        <h2>{{ prodotto.nome }}&nbsp;{{ prodotto.marca }}</h2>
-        <p>{{ prodotto.pezzatura }}</p>
+        <h2>{{ prodotto.nome }}</h2>
+        <p>{{ prodotto.marca?prodotto.marca + " - ":"" }}{{ prodotto.pezzatura }}</p>
       </ion-label>
-      <ion-label float-right>
-        <h3>Quantit&aacute;: </h3>
-      </ion-label>
-      <ion-input iten-end type="number" [ngModel]="selezionati.get(prodotto.id)" (ngModelChange)="selezionaProdotto(prodotto.id, $event)" min="0" max="20"></ion-input>
+      <ion-button slot="end" *ngIf="selezionati.get(prodotto.id)===0" fill="clear" color="primary" size="large" (click)="selezionaProdotto(prodotto.id, 1)">
+        <ion-icon name="add-circle-outline"></ion-icon>
+      </ion-button>
+      <ion-buttons slot="end" *ngIf="selezionati.get(prodotto.id)>0">
+        <ion-button *ngIf="selezionati.get(prodotto.id)>0" fill="clear" color="secondary" (click)="selezionaProdotto(prodotto.id, selezionati.get(prodotto.id)-1)">
+          <ion-icon name="remove-circle-outline"></ion-icon>
+        </ion-button>
+        <ion-button ill="clear" color="primary">
+          {{selezionati.get(prodotto.id)}}
+        </ion-button>
+        <ion-button fill="clear" color="primary" (click)="selezionaProdotto(prodotto.id, selezionati.get(prodotto.id)+1)">
+          <ion-icon name="add-circle-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+      
     </ion-item>
   </ion-list>
 
