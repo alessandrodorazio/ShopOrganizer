@@ -1,5 +1,10 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
+    <ion-buttons slot="secondary">
+      <ion-button (click)="salva($event)" (disabled)="indirizzoValido">
+        <ion-icon slot="start" name="save"></ion-icon>
+      </ion-button>
+    </ion-buttons>
     <ion-title>
       Preferenze
     </ion-title>
@@ -13,85 +18,85 @@
     </ion-toolbar>
   </ion-header>
   
-  <ion-card>
-    <ion-card-header>
-      <ion-card-subtitle>{{ infoUtente.email }}</ion-card-subtitle>
-      <ion-card-title>Ciao, {{ infoUtente.nome }}!</ion-card-title>
-    </ion-card-header>
+  <ion-card class="ion-padding">
+    
+        <ion-card-subtitle>
+          <ion-icon name="mail-outline"></ion-icon>
+          {{ infoUtente.email }}
+        </ion-card-subtitle>
+        <ion-card-title>
+          Ciao,&nbsp;<ion-text color="primary">{{ infoUtente.nome }}</ion-text>!
+        </ion-card-title>
+    
   </ion-card>
   
-  <ion-card>
-    <ion-card-header>
-      <ion-card-subtitle>Posizione di partenza</ion-card-subtitle>
-    </ion-card-header>
-    <ion-card-content>
-      <ion-item>
-        <ion-input [(ngModel)]="infoUtente.indirizzo" placeholder="Indirizzo" debounce="750" (ionChange)="localizzaIndirizzo($event)" [ngClass]="{'error': (!indirizzoValido && !infoUtente.usaPosAttuale)}" [disabled]="infoUtente.usaPosAttuale"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label>Usa posizione corrente</ion-label>
-        <ion-toggle secondary [(ngModel)]="infoUtente.usaPosAttuale"></ion-toggle>
-      </ion-item>
-    </ion-card-content>
-  </ion-card>
+  <ion-list>
+    <ion-item class="ion-no-padding">
+      <h3 class="ion-margin-start">Posizione</h3>
+    </ion-item>
+    <ion-item class="ion-no-padding">
+      <ion-icon class="ion-margin-start mr-5px" color="primary" name="navigate-circle-outline"></ion-icon>
+      <ion-label>
+        Usa posizione corrente
+      </ion-label>
+      <ion-toggle secondary [(ngModel)]="infoUtente.usaPosAttuale"></ion-toggle>
+    </ion-item>
+    <ion-item class="ion-no-padding">
+      <ion-input class="ion-margin-start" [(ngModel)]="infoUtente.indirizzo" placeholder="Indirizzo personalizzato" debounce="750" (ionChange)="localizzaIndirizzo($event)" [ngClass]="{'error': (!indirizzoValido && !infoUtente.usaPosAttuale)}" [disabled]="infoUtente.usaPosAttuale"></ion-input>
+    </ion-item>
+  </ion-list>
 
-  <ion-card>
-    <ion-card-header>
-      <ion-card-subtitle>Negozi da mostrare: {{ infoUtente.maxRisultati }}</ion-card-subtitle>
-    </ion-card-header>
-    <ion-card-content>
-      <ion-item>
-        <ion-range min="1" max="50" color="secondary" [(ngModel)]="infoUtente.maxRisultati">
-          <ion-label slot="start">1</ion-label>
-          <ion-label slot="end">50</ion-label>
-        </ion-range>
-      </ion-item>
-    </ion-card-content>
-  </ion-card>
+  <ion-list>
+    <ion-item class="ion-no-padding">
+      <h3 class="ion-margin-start">Preferenze</h3>
+    </ion-item>
+  
+    <ion-item class="ion-no-padding">
+      <ion-icon class="ion-margin-start mr-5px" color="primary" name="search-circle-outline"></ion-icon>
+      <ion-label>
+        Negozi da mostrare
+      </ion-label>
+        {{ infoUtente.maxRisultati }}
+        <ion-button fill="clear" (click)="display.negoziDaMostrareItem = !display.negoziDaMostrareItem">
+          <ion-icon *ngIf=" display.negoziDaMostrareItem " name="chevron-up-outline"></ion-icon>        
+          <ion-icon *ngIf=" !display.negoziDaMostrareItem " name="chevron-down-outline"></ion-icon>        
+        </ion-button>
+    </ion-item>
+    <ion-item class="ion-no-padding" *ngIf=" display.negoziDaMostrareItem ">
+      <ion-range min="1" max="50" color="secondary" [(ngModel)]="infoUtente.maxRisultati">
+        <ion-label slot="start">1</ion-label>
+        <ion-label slot="end">50</ion-label>
+      </ion-range>
+    </ion-item>
 
-  <ion-card>
-    <ion-card-header>
-      <ion-card-subtitle>Raggio di ricerca: {{ infoUtente.raggioKm }} Km</ion-card-subtitle>
-    </ion-card-header>
-    <ion-card-content>
-      <ion-item>
+    <ion-item class="ion-no-padding">
+      <ion-icon class="ion-margin-start mr-5px" color="primary" name="locate-outline"></ion-icon>
+      <ion-label>
+        Raggio di ricerca
+      </ion-label>
+        {{ infoUtente.raggioKm }}Km
+        <ion-button fill="clear" (click)="display.raggioDiRicercaItem = !display.raggioDiRicercaItem">
+          <ion-icon *ngIf=" display.raggioDiRicercaItem " name="chevron-up-outline"></ion-icon>        
+          <ion-icon *ngIf=" !display.raggioDiRicercaItem " name="chevron-down-outline"></ion-icon>        
+        </ion-button>
+    </ion-item>
+    <ion-item class="ion-no-padding" *ngIf=" display.raggioDiRicercaItem ">
         <ion-range min="1" max="30" step="0.5" color="secondary" [(ngModel)]="infoUtente.raggioKm">
           <ion-label slot="start">1</ion-label>
           <ion-label slot="end">30</ion-label>
         </ion-range>
       </ion-item>
-    </ion-card-content>
-  </ion-card>
 
-  <ion-card>
-    <ion-card-header>
-      <ion-card-subtitle>Ordinamento risulati</ion-card-subtitle>
-    </ion-card-header>
-    <ion-card-content>
-      <ion-item>
+
+      <ion-item class="ion-no-padding">
+        <ion-icon class="ion-margin-start mr-5px" color="primary" name="funnel-outline"></ion-icon>
+        <ion-label>Ordinamento predefinito</ion-label>
         <ion-select [(ngModel)]="infoUtente.ordinamento">
           <ion-select-option value="DISTANZA">Distanza</ion-select-option>
           <ion-select-option value="PREZZO">Prezzo</ion-select-option>
         </ion-select>
       </ion-item>
-    </ion-card-content>
-  </ion-card>
+      
+  </ion-list>
 
-  <ion-card>
-    <ion-card-header>
-      <ion-card-subtitle>TOKEN (da rimuovere, debug)</ion-card-subtitle>
-    </ion-card-header>
-    <ion-card-content>
-      <ion-item>
-        <ion-input (ngModel)="token" readonly></ion-input>
-      </ion-item>
-    </ion-card-content>
-  </ion-card>
-
-  <ion-card>
-    <ion-card-content>
-      <ion-button color="primary" (click)="salva($event)" (disabled)="indirizzoValido">Salva</ion-button>
-      <ion-button color="secondary" (click)="abbandona($event)">Abbandona</ion-button>
-    </ion-card-content>
-  </ion-card>
 </ion-content>

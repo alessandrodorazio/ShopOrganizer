@@ -14,6 +14,11 @@ export class PreferenzePage implements OnInit {
   infoUtente = new Utente();
   token: string;
   indirizzoValido = true;
+  display = {
+    "negoziDaMostrareItem": false,
+    "raggioDiRicercaItem": false,
+    "ordinamento": false,
+  };
 
   constructor(private appState: AppStateService, private router: Router,
               private nativeGeocoder: NativeGeocoder, private alertController: AlertController) {}
@@ -27,6 +32,8 @@ export class PreferenzePage implements OnInit {
       this.router.navigate(['/login']);
     } else {
       console.log(this.token);
+      this.infoUtente.email = "me@alessandrodorazio.it";
+      this.infoUtente.nome = "Alessandro";
     }
   }
 
