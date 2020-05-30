@@ -6,6 +6,7 @@ import { ProdottoPrezzato } from './../model/prodotto';
 import { AppStateService } from './../service/appstate.service';
 import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
+import { Geolocation } from '@ionic-native/geolocation/ngx';
 
 @Component({
   selector: 'app-listanegozi',
@@ -20,8 +21,11 @@ export class ListaNegoziPage implements OnInit {
   negozioDettaglio: Negozio;
   infoUtente: Utente;
   loading: boolean;
+  latitude = 0;
+  longitude = 0;
 
-  constructor(private appState: AppStateService, private remoteService: RemoteService, private modalController: ModalController) { }
+  constructor(private appState: AppStateService, private remoteService: RemoteService,
+              private modalController: ModalController, private geoLoc: Geolocation) { }
 
   ngOnInit() {
   }
@@ -34,6 +38,20 @@ export class ListaNegoziPage implements OnInit {
       this.caricaNegozi();
     } else {
       this.loading = false;
+    }
+
+    // Estrate posizione corrente o coordinate di preferenza dell'utente
+    if (this.infoUtente.usaPosAttuale) {
+      this.geoLoc.getCurrentPosition().then((loc) => {
+        console.log('Posizione Corrente, lat=' + loc.coords.latitude + '- long=' + loc.coords.longitude);
+        this.latitude = loc.coords.latitude;
+        this.longitude = loc.coords.longitude;
+      }).catch((error) => {
+        console.log('Error getting location', error);
+      });
+    } else {
+      this.latitude = this.infoUtente.lat;
+      this.longitude = this.infoUtente.long;
     }
   }
 
@@ -104,7 +122,9 @@ export class ListaNegoziPage implements OnInit {
     this.negozi.forEach(n => {
       const nt: NegozioTotale = n as any;
       nt.totale = 0;
-      nt.distanza = this.calcolaDistanzaInKm(this.infoUtente.lat, this.infoUtente.long, n.coordinate.lat, n.coordinate.long);
+
+      nt.distanza = this.calcolaDistanzaInKm(this.latitude, this.longitude, n.coordinate.lat, n.coordinate.long);
+
       this.selezionati.forEach(sel => {
         nt.totale += n.prodotti.filter(p => p.id === sel.id).reduce((tot, el) => {
           return tot + (el.prezzo * sel.quantita);

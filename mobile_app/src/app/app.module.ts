@@ -1,3 +1,4 @@
+import { PipesModule } from './pipes/pipes.module';
 import { AppStateService } from './service/appstate.service';
 import { RemoteService } from './service/remote.service';
 import { NgModule } from '@angular/core';
@@ -15,6 +16,7 @@ import { AppComponent } from './app.component';
 import { HttpClientModule  } from '@angular/common/http';
 
 import { NativeGeocoder } from '@ionic-native/native-geocoder/ngx';
+import { Geolocation } from '@ionic-native/geolocation/ngx';
 
 @NgModule({
   declarations: [
@@ -26,7 +28,8 @@ import { NativeGeocoder } from '@ionic-native/native-geocoder/ngx';
     IonicModule.forRoot(),
     AppRoutingModule,
     HttpClientModule,
-    IonicStorageModule.forRoot()
+    IonicStorageModule.forRoot(),
+    PipesModule
   ],
   providers: [
     StatusBar,
@@ -37,7 +40,8 @@ import { NativeGeocoder } from '@ionic-native/native-geocoder/ngx';
     },
     RemoteService,
     AppStateService,
-    NativeGeocoder
+    NativeGeocoder,
+    Geolocation
   ],
   bootstrap: [AppComponent]
 })

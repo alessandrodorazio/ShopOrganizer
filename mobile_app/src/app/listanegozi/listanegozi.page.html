@@ -28,7 +28,7 @@
     <ion-card-content>
       <ion-grid>
         <ion-row>
-          <ion-col>{{ aggiustaDistanza(negozio.distanza) }}</ion-col>
+          <ion-col>{{ negozio.distanza | distanza }}</ion-col>
           <ion-col class="text-right"><ion-button size="small" fill="clear" (click)="apriDettaglio(negozio.id)">Prezzi</ion-button></ion-col>
         </ion-row>
       </ion-grid>

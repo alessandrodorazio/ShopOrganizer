@@ -15,9 +15,9 @@ export class PreferenzePage implements OnInit {
   token: string;
   indirizzoValido = true;
   display = {
-    "negoziDaMostrareItem": false,
-    "raggioDiRicercaItem": false,
-    "ordinamento": false,
+    negoziDaMostrareItem: false,
+    raggioDiRicercaItem: false,
+    ordinamento: false,
   };
 
   constructor(private appState: AppStateService, private router: Router,
@@ -31,12 +31,12 @@ export class PreferenzePage implements OnInit {
     if (localStorage.getItem('token') === null) {
       this.router.navigate(['/login']);
     } else {
-      let user = JSON.parse(localStorage.getItem('user'));
+      const user = JSON.parse(localStorage.getItem('user'));
       this.infoUtente.email = user.email;
       this.infoUtente.nome = user.nome;
       this.infoUtente.raggioKm = user.raggio_km;
       this.infoUtente.maxRisultati = user.max_negozi;
-      this.infoUtente.ordinamento = user.preferenza_filtro==1?'PREZZO':'DISTANZA'
+      this.infoUtente.ordinamento = (user.preferenza_filtro === 1) ? 'PREZZO' : 'DISTANZA';
     }
   }
 
@@ -74,17 +74,17 @@ export class PreferenzePage implements OnInit {
       this.infoUtente.long = 13.364451;
     }
 
-    let token = localStorage.getItem('token');
-    let user = JSON.parse(localStorage.getItem('user'));
+    const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user'));
 
-    let body = {
-      "user": {
-        "nome": this.infoUtente.nome,
-        "raggio_km": this.infoUtente.raggioKm,
-        "max_negozi": this.infoUtente.maxRisultati,
-        "preferenza_filtro": this.infoUtente.ordinamento==="PREZZO"?1:2,
-        "lista": {
-          "prodotti": []
+    const body = {
+        user: {
+        nome: this.infoUtente.nome,
+        raggio_km: this.infoUtente.raggioKm,
+        max_negozi: this.infoUtente.maxRisultati,
+        preferenza_filtro: (this.infoUtente.ordinamento === 'PREZZO') ? 1 : 2,
+        lista: {
+          prodotti: []
         }
       }
     };
@@ -101,7 +101,8 @@ export class PreferenzePage implements OnInit {
           // 'Content-Type': 'application/x-www-form-urlencoded',
         },
         redirect: 'follow', // manual, *follow, error
-        referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+        referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin,
+                                       // same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
         body: JSON.stringify(data)
       });
       return response.json(); // parses JSON response into native JavaScript objects
@@ -111,7 +112,7 @@ export class PreferenzePage implements OnInit {
       .then(data => {
         localStorage.removeItem('user');
         localStorage.setItem('user', JSON.stringify(data.user));
-        //TODO show alert
+        // TODO show alert
       }).catch(err => console.error(err));
 
     if (this.somethingChanged()) {
@@ -121,7 +122,6 @@ export class PreferenzePage implements OnInit {
     }
   }
 
-     
   abbandona(event: any) {
     if (this.somethingChanged()) {
       this.conferma();

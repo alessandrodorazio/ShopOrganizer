@@ -1,3 +1,4 @@
+import { PipesModule } from './../pipes/pipes.module';
 import { DettaglioprodottiPageModule } from './dettaglioprodotti/dettaglioprodotti.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -15,7 +16,8 @@ import { ListaNegoziPage } from './listanegozi.page';
     FormsModule,
     IonicModule,
     ListaNegoziPageRoutingModule,
-    DettaglioprodottiPageModule
+    DettaglioprodottiPageModule,
+    PipesModule
   ],
   declarations: [ListaNegoziPage]
 })
