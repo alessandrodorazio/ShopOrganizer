@@ -22,7 +22,6 @@ const routes: Routes = [
     path: 'listanegozi',
     loadChildren: () => import('./listanegozi/listanegozi.module').then( m => m.ListaNegoziPageModule)
   }
-
 ];
 @NgModule({
   imports: [

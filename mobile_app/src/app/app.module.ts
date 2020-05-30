@@ -1,4 +1,4 @@
-import { PipesModule } from './pipes/pipes.module';
+import { PipesModule } from './pipe/pipes.module';
 import { AppStateService } from './service/appstate.service';
 import { RemoteService } from './service/remote.service';
 import { NgModule } from '@angular/core';
@@ -20,7 +20,7 @@ import { Geolocation } from '@ionic-native/geolocation/ngx';
 
 @NgModule({
   declarations: [
-    AppComponent,
+    AppComponent
   ],
   entryComponents: [],
   imports: [
