@@ -1,5 +1,5 @@
 .selected {
-    color: rgb(219, 133, 73);
+  --background: rgb(250, 245, 174);
 }
 
 ion-spinner {
@@ -13,6 +13,10 @@ ion-spinner {
     left: 0;
     bottom: 0;
     right: 0;
+}
+
+ion-avatar {
+  --border-radius: 15px;
 }
 
 .button-group {

@@ -24,14 +24,12 @@
         <img src="{{ prodotto.immagine }}">
       </ion-avatar>
       <ion-label>
-        <h2>{{ prodotto.nome }}&nbsp;{{ prodotto.marca }}</h2>
-        <p>{{ prodotto.pezzatura }}</p>
+        <h2>{{ prodotto.nome }}</h2>
+        <p>{{ prodotto.marca?prodotto.marca + " - ":"" }}{{ prodotto.pezzatura }}</p>
       </ion-label>
-      <ion-label float-right>
-        <ion-button (click)="rimuovi(idx)">
-          <ion-icon name="trash"></ion-icon>
-        </ion-button>
-      </ion-label>
+      <ion-button fill="clear" slot="end" size="large" (click)="rimuovi(idx)">
+        <ion-icon color="secondary" name="close-circle-outline"></ion-icon>
+      </ion-button>
     </ion-item>
   </ion-list>
 
