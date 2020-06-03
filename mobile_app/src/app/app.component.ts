@@ -12,12 +12,8 @@ import { Utente } from './model/utente';
   styleUrls: ['app.component.scss']
 })
 export class AppComponent {
-  constructor(
-    private appState: AppStateService, 
-    private platform: Platform,
-    private splashScreen: SplashScreen,
-    private statusBar: StatusBar
-  ) {
+  constructor(private appState: AppStateService, private platform: Platform,
+              private splashScreen: SplashScreen, private statusBar: StatusBar) {
     this.initializeApp();
   }
 
@@ -26,16 +22,11 @@ export class AppComponent {
       this.statusBar.styleDefault();
 
       let infoUtente = new Utente();
-      if(localStorage.getItem('user') !== null){
-        let user = JSON.parse(localStorage.getItem('user'));
-        infoUtente.email = user.email;
-        infoUtente.nome = user.nome;
-        infoUtente.raggioKm = user.raggio_km;
-        infoUtente.maxRisultati = user.max_negozi;
-        infoUtente.ordinamento = user.preferenza_filtro==1?'PREZZO':'DISTANZA';
-        infoUtente.listaSalvata = user.lista[0].prodotti;
+      if (this.appState.get(Utente.UTENTE_KEY) !== null) {
+        infoUtente = this.appState.get(Utente.UTENTE_KEY);
+      } else {
+        this.appState.add(Utente.UTENTE_KEY, infoUtente);
       }
-      this.appState.add(Utente.UTENTE_KEY, infoUtente);
 
       this.splashScreen.hide();
     });

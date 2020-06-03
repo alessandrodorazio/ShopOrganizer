@@ -17,7 +17,7 @@ const routes: Routes = [
       },
       {
         path: 'preferenze',
-        loadChildren: () => import('../preferenze/preferenze.module').then(m => m.PreferenzePageModule)
+        loadChildren: () => import('../preferenze/preferenze.module').then(m => m.PreferenzePageModule),
       },
       {
         path: '',

@@ -1,3 +1,4 @@
+import { DeactivateService } from './../service/deactivate.service';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
@@ -15,6 +16,7 @@ import { PreferenzePageRoutingModule } from './preferenze-routing.module';
     RouterModule.forChild([{ path: '', component: PreferenzePage }]),
     PreferenzePageRoutingModule,
   ],
-  declarations: [PreferenzePage]
+  declarations: [PreferenzePage],
+  providers: [DeactivateService]
 })
 export class PreferenzePageModule {}

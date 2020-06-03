@@ -1,7 +1,7 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="secondary">
-      <ion-button (click)="salva($event)" (disabled)="indirizzoValido">
+      <ion-button (click)="salva($event)" [disabled]="!canSave()">
         <ion-icon slot="start" name="save"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -56,7 +56,7 @@
       <ion-label class="ion-margin-end">
         Nome
       </ion-label>
-        <ion-input type="text" [(ngModel)]="infoUtente.nome" maxlength="15" placeholder="Username"></ion-input>
+        <ion-input type="text" [(ngModel)]="infoUtente.nome" maxlength="15" placeholder="Username" [ngClass]="{'error': (!nomeValido)}" (ionChange)="aggiornaNomeValido($event)"></ion-input>
     </ion-item>
   
     <ion-item class="ion-no-padding">

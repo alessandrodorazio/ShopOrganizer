@@ -2,18 +2,21 @@ import { AppStateService } from './../service/appstate.service';
 import { Component, OnInit } from '@angular/core';
 import { Utente } from '../model/utente';
 import { Router } from '@angular/router';
-import { NativeGeocoder, NativeGeocoderOptions } from '@ionic-native/native-geocoder/ngx';
+import { NativeGeocoder, NativeGeocoderOptions, NativeGeocoderResult } from '@ionic-native/native-geocoder/ngx';
 import { AlertController } from '@ionic/angular';
+import { IDeactivatableComponent } from '../service/deactivate.service';
 
 @Component({
   selector: 'app-preferenze',
   templateUrl: 'preferenze.page.html',
   styleUrls: ['preferenze.page.scss']
 })
-export class PreferenzePage implements OnInit {
+export class PreferenzePage implements OnInit, IDeactivatableComponent {
   infoUtente = new Utente();
+  infoUtenteBackup: Utente;
   token: string;
   indirizzoValido = true;
+  nomeValido = false;
   display = {
     negoziDaMostrareItem: false,
     raggioDiRicercaItem: false,
@@ -23,21 +26,91 @@ export class PreferenzePage implements OnInit {
   constructor(private appState: AppStateService, private router: Router,
               private nativeGeocoder: NativeGeocoder, private alertController: AlertController) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() { }
 
   ionViewWillEnter() {
-    this.token = localStorage.getItem('token');
-    if (localStorage.getItem('token') === null) {
+    if (this.appState.get(Utente.UTENTE_KEY) === null) {
       this.router.navigate(['/login']);
     } else {
-      const user = JSON.parse(localStorage.getItem('user'));
-      this.infoUtente.email = user.email;
-      this.infoUtente.nome = user.nome;
-      this.infoUtente.raggioKm = user.raggio_km;
-      this.infoUtente.maxRisultati = user.max_negozi;
-      this.infoUtente.ordinamento = (user.preferenza_filtro === 1) ? 'PREZZO' : 'DISTANZA';
+      this.infoUtente = this.appState.get(Utente.UTENTE_KEY);
+      console.log('infoUtente Enter = ' + JSON.stringify(this.infoUtente));
+
+      this.nomeValido = (this.infoUtente.nome === null) ? false : (this.infoUtente.nome.length > 0);
+      this.backup();
     }
+  }
+
+  // Chiamato quando si sta uscendo dalla pagina...
+  async canDeactivate(): Promise<boolean> {
+    console.log('Preferenze.canDeactivate()');
+
+    if (!this.canSave()) {
+      // Mostra alert con messaggio
+      const notifyAlert = await this.alertController.create({
+        header: 'ShopOrganizer',
+        message: 'Alcuni campi non sono compilati correttamente!',
+        buttons: ['OK']
+      });
+      // Attende chiusura...
+      await notifyAlert.present();
+      await notifyAlert.onDidDismiss().then(() => {});
+      return false;
+    }
+
+    console.log('Preferenze.canDeactivate().isFirstTime = ' + this.infoUtente.firtTime);
+    if (this.infoUtente.firtTime) {
+      console.log('Preferenze.canDeactivate() is FirstTime!!!!');
+
+      // Mostra alert con messaggio
+      const notifyAlert = await this.alertController.create({
+        header: 'ShopOrganizer',
+        message: 'Completare la configurazione dell\'account prima di proseguire!',
+        buttons: ['OK']
+      });
+      // Attende chiusura...
+      await notifyAlert.present();
+      await notifyAlert.onDidDismiss().then(() => {});
+      return false;
+    }
+
+    if (!this.somethingChanged()) {
+      console.log('Nessuna modifica...uscita!');
+      return true;
+    }
+
+    const alert = await this.alertController.create({
+        header: 'ShopOrganizer',
+        message: 'Hai effettuato modifiche, sicuro di volerle abbandonare?',
+        buttons: [{
+            text: 'Si',
+            handler: () => {
+              alert.dismiss(true);
+              return false;
+            }
+        }, {
+            text: 'No',
+            handler: () => {
+              alert.dismiss(false);
+              return false;
+            }
+        }]
+    });
+
+    let res: boolean;
+    await alert.present();
+    await alert.onDidDismiss().then((confrimOut) => {
+      res = confrimOut.data;
+    });
+    console.log('ConfPreferenze.canDeactivate(): ' + res);
+    return res;
+  }
+
+  canSave() {
+    if (!this.nomeValido) { return false; }
+    if (this.infoUtente.usaPosAttuale) { return true; }
+    if (this.indirizzoValido && this.infoUtente.indirizzo) { return true; }
+
+    return false;
   }
 
   localizzaIndirizzo(event: any) {
@@ -54,77 +127,77 @@ export class PreferenzePage implements OnInit {
         this.infoUtente.long = coordinates[0].longitude;
         this.indirizzoValido = true;
         this.notifica('Coordinate: ' + coordinates[0].latitude + ' ' + coordinates[0].longitude);
+        this.nativeGeocoder.reverseGeocode(this.infoUtente.lat, this.infoUtente.long, options)
+          .then((result: NativeGeocoderResult[]) => {
+            console.log('Address decoded: ' + result[0].locality);
+            // this.infoUtente.indirizzo = result[0].locality;
+            this.infoUtente.indirizzo = 'DECODIFICATO';
+          })
+          .catch((error: any) => {
+            console.log('Reverse Geocode: ' + error);
+            this.notifica(error);
+          });
       })
       .catch((error: any) => {
-        console.log(error);
+        console.log('Forward Geocode: ' + error);
         this.indirizzoValido = false;
         this.notifica(error);
       });
+  }
 
-    // Codice mock da rimuovere!!
-    this.infoUtente.lat = 42.365300;
-    this.infoUtente.long = 13.364451;
-    this.indirizzoValido = false;
+  aggiornaNomeValido(event: any) {
+    this.nomeValido = (!this.infoUtente.nome) ? false : (this.infoUtente.nome.length > 0);
   }
 
   salva(event: any) {
-    // Se assenti usa coordinate mock (0,0) indica di usare  la posizione attuale
-    if (this.infoUtente.lat === 0 && this.infoUtente.long === 0) {
-      this.infoUtente.lat = 42.365300;
-      this.infoUtente.long = 13.364451;
-    }
-
-    const token = localStorage.getItem('token');
-    const user = JSON.parse(localStorage.getItem('user'));
-
-    const body = {
-        user: {
-        nome: this.infoUtente.nome,
-        raggio_km: this.infoUtente.raggioKm,
-        max_negozi: this.infoUtente.maxRisultati,
-        preferenza_filtro: (this.infoUtente.ordinamento === 'PREZZO') ? 1 : 2,
-        lista: {
-          prodotti: []
-        }
-      }
-    };
-
-
-    async function postData(url = '', data = {}) {
-      const response = await fetch(url, {
-        method: 'PUT', // *GET, POST, PUT, DELETE, etc.
-        mode: 'cors', // no-cors, *cors, same-origin
-        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: 'same-origin', // include, *same-origin, omit
-        headers: {
-          'Content-Type': 'application/json'
-          // 'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        redirect: 'follow', // manual, *follow, error
-        referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin,
-                                       // same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-        body: JSON.stringify(data)
-      });
-      return response.json(); // parses JSON response into native JavaScript objects
-    }
-    console.log('https://shoporganizer.herokuapp.com/public/api/users/' + user.id + '?token=' + token);
-    postData('https://shoporganizer.herokuapp.com/public/api/users/' + user.id + '?token=' + token, body)
-      .then(data => {
-        localStorage.removeItem('user');
-        localStorage.setItem('user', JSON.stringify(data.user));
-        // TODO show alert
-      }).catch(err => console.error(err));
-
     if (this.somethingChanged()) {
+      const body = {
+        user: {
+          nome: this.infoUtente.nome,
+          raggio_km: this.infoUtente.raggioKm,
+          max_negozi: this.infoUtente.maxRisultati,
+          preferenza_filtro: (this.infoUtente.ordinamento === 'PREZZO') ? 1 : 2,
+          coordinate: (this.infoUtente.usaPosAttuale) ? {
+            lat: -1,
+            long: -1
+          } : {
+            lat: this.infoUtente.lat,
+            long: this.infoUtente.long
+          },
+          lista: {
+            prodotti: []
+          }
+        }
+      };
+
+      async function postData(url = '', data = {}) {
+        const response = await fetch(url, {
+          method: 'PUT',
+          mode: 'cors',
+          cache: 'no-cache',
+          credentials: 'same-origin',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          redirect: 'follow',
+          referrerPolicy: 'no-referrer',
+          body: JSON.stringify(data)
+        });
+        return response.json(); // parses JSON response into native JavaScript objects
+      }
+
+      console.log('https://shoporganizer.herokuapp.com/public/api/users/' + this.infoUtente.id + '?token=' + this.infoUtente.token);
+      postData('https://shoporganizer.herokuapp.com/public/api/users/' + this.infoUtente.id + '?token=' + this.infoUtente.token, body)
+        .then(data => {
+          this.backup();
+        })
+        .catch(err => console.error(err));
+
+      // Prima Configurazione completata...
+      this.infoUtente.firtTime = false;
       // è più un replace...
       this.appState.add(Utente.UTENTE_KEY, this.infoUtente);
       console.log('InfoUtente: ' + JSON.stringify(this.infoUtente));
-    }
-  }
-
-  abbandona(event: any) {
-    if (this.somethingChanged()) {
-      this.conferma();
     }
   }
 
@@ -133,25 +206,16 @@ export class PreferenzePage implements OnInit {
     return JSON.stringify(statoOriginale) !== JSON.stringify(this.infoUtente);
   }
 
-  async conferma() {
-    const alert = await this.alertController.create({
-      header: 'ShopOrganizer',
-      message: 'Hai effettuato modifiche, sicuro di volerle abbandonare?',
-      buttons: [{
-                  text: 'Si',
-                  handler: () => {
-                    this.router.navigate(['/tabs/listaprodotti']);
-                  }
-                },
-                {
-                  text: 'No',
-                  handler: () => {
-                    return true;
-                  }
-                }]
-    });
+  backup() {
+    console.log('infoUtenteBackup Prima = ' + JSON.stringify(this.infoUtenteBackup));
+    this.infoUtenteBackup = {... this.infoUtente};
+    console.log('infoUtenteBackup Dopo = ' + JSON.stringify(this.infoUtenteBackup));
+  }
 
-    await alert.present();
+  restore() {
+    console.log('infoUtente Prima = ' + JSON.stringify(this.infoUtente));
+    this.infoUtente = {... this.infoUtenteBackup};
+    console.log('infoUtente Dopo = ' + JSON.stringify(this.infoUtente));
   }
 
   async notifica(testo: string) {

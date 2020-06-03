@@ -1,3 +1,4 @@
+import { AppStateService } from './../service/appstate.service';
 import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { NavController, AlertController } from '@ionic/angular';
@@ -11,10 +12,10 @@ export class RegisterPage implements OnInit {
   user: Utente = new Utente();
   passwordConfirm: string;
 
-  constructor(private navCtrl: NavController, private router: Router, private alertController: AlertController) { }
+  constructor(private navCtrl: NavController, private router: Router, private alertController: AlertController,
+              private appState: AppStateService) { }
 
-  ngOnInit() {
-  }
+  ngOnInit() { }
 
   async emailAlreadyTaken() {
     const alert = await this.alertController.create({
@@ -78,17 +79,15 @@ export class RegisterPage implements OnInit {
 
     async function postData(url = '', data = {}) {
       const response = await fetch(url, {
-        method: 'POST', // *GET, POST, PUT, DELETE, etc.
-        mode: 'cors', // no-cors, *cors, same-origin
-        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: 'same-origin', // include, *same-origin, omit
+        method: 'POST',
+        mode: 'cors',
+        cache: 'no-cache',
+        credentials: 'same-origin',
         headers: {
           'Content-Type': 'application/json'
-          // 'Content-Type': 'application/x-www-form-urlencoded',
         },
-        redirect: 'follow', // manual, *follow, error
-        referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin,
-                                       // origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+        redirect: 'follow',
+        referrerPolicy: 'no-referrer',
         body: JSON.stringify(data)
       });
       return response.json(); // parses JSON response into native JavaScript objects
@@ -96,16 +95,30 @@ export class RegisterPage implements OnInit {
 
     postData('https://shoporganizer.herokuapp.com/public/api/register', {email: this.user.email, password: this.user.password})
       .then(data => {
-        console.log(data); // JSON data parsed by `response.json()` call
+        console.log(data);
 
         if (data.access_token) {
-          localStorage.setItem('token', data.access_token);
-          localStorage.setItem('user', JSON.stringify(data.user));
+          const infoUtente = new Utente();
+
+          infoUtente.id = data.user.id;
+          infoUtente.token = data.access_token;
+          infoUtente.email = this.user.email;
+          infoUtente.nome = data.user.nome;
+          infoUtente.raggioKm = data.user.raggio_km;
+          infoUtente.maxRisultati = data.user.max_negozi;
+          infoUtente.ordinamento = (data.user.preferenza_filtro === 1) ? 'PREZZO' : 'DISTANZA';
+          infoUtente.usaPosAttuale = true;
+          infoUtente.lat = -1;
+          infoUtente.long = -1;
+          infoUtente.firtTime = true;
+
+          this.appState.add(Utente.UTENTE_KEY, infoUtente);
           this.router.navigate(['/tabs/preferenze']);
         } else {
           this.emailAlreadyTaken();
         }
-      }).catch(err => {
+      })
+      .catch(err => {
         this.emailAlreadyTaken();
         console.error(err);
       });

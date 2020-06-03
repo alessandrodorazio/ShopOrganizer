@@ -124,15 +124,19 @@ export class ListaNegoziPage implements OnInit {
       nt.totale = 0;
 
       nt.distanza = this.calcolaDistanzaInKm(this.latitude, this.longitude, n.coordinate.lat, n.coordinate.long);
+      console.log('Distanza = ' + nt.distanza + ', ' + this.infoUtente.raggioKm);
+      // Siamo nel raggio massimo richiesto?
+      if (nt.distanza <= this.infoUtente.raggioKm) {
+        this.selezionati.forEach(sel => {
+          nt.totale += n.prodotti.filter(p => p.id === sel.id).reduce((tot, el) => {
+            return tot + (el.prezzo * sel.quantita);
+          }, 0);
+        });
 
-      this.selezionati.forEach(sel => {
-        nt.totale += n.prodotti.filter(p => p.id === sel.id).reduce((tot, el) => {
-          return tot + (el.prezzo * sel.quantita);
-        }, 0);
-      });
-
-      this.risultato.push(nt);
+        this.risultato.push(nt);
+      }
     });
+    console.log('Output = ' + JSON.stringify(this.risultato));
 
     this.ordina(null);
   }

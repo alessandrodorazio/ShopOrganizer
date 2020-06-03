@@ -126,19 +126,17 @@ export class ListaProdottiPage implements OnInit {
       infoUtente.listaSalvata = daSalvare;
       this.appState.add(Utente.UTENTE_KEY, infoUtente);
 
-      let token = localStorage.getItem('token');
-      let user = JSON.parse(localStorage.getItem('user'));
+      const token = localStorage.getItem('token');
+      const user = JSON.parse(localStorage.getItem('user'));
 
-
-      let body = {
-        "user": {
-          "lista": {
-            "prodotti": infoUtente.listaSalvata.map(e => e.id)
+      const body = {
+        user: {
+            lista: {
+              prodotti: infoUtente.listaSalvata.map(e => e.id)
           }
         }
       };
-  
-  
+
       async function postData(url = '', data = {}) {
         const response = await fetch(url, {
           method: 'PUT', // *GET, POST, PUT, DELETE, etc.
@@ -150,17 +148,20 @@ export class ListaProdottiPage implements OnInit {
             // 'Content-Type': 'application/x-www-form-urlencoded',
           },
           redirect: 'follow', // manual, *follow, error
-          referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+          referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin,
+                                         // same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
           body: JSON.stringify(data)
         });
         return response.json(); // parses JSON response into native JavaScript objects
       }
+
       console.log('https://shoporganizer.herokuapp.com/public/api/users/' + user.id + '?token=' + token);
+
       postData('https://shoporganizer.herokuapp.com/public/api/users/' + user.id + '?token=' + token, body)
         .then(data => {
           localStorage.removeItem('user');
           localStorage.setItem('user', JSON.stringify(data.user));
-          //TODO show alert
+          // TODO show alert
         }).catch(err => console.error(err));
 
       this.router.navigate(['/tabs/listasalvata']);
@@ -199,10 +200,8 @@ export class ListaProdottiPage implements OnInit {
 
   caricaProdotti(event: any) {
     // Pull-to-refresh?
-    if (event === null) {
-      // No, primo caricamento...
-      this.loading = true;
-    } else {
+    this.loading = true;
+    if (event !== null) {
       // Si, svuota tutto (pull-to-refresh)
       this.tabellaProdottiOriginale = this.tabellaProdotti = this.prodotti = [];
     }
