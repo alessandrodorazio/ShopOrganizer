@@ -178,7 +178,7 @@ export class LoginPage implements OnInit {
 			this.fb.api("/me?fields=name,email", permissions)
 			.then(user =>{
         //user.email
-        getData('http://127.0.0.1:8000/api/onlyEmail/test@t.it').then(data => {
+        getData('https://shoporganizer.herokuapp.com/public/api/onlyEmail/' + user.email).then(data => {
           console.log('Logged in: ' + JSON.stringify(data));
 
         if (data.access_token) {
