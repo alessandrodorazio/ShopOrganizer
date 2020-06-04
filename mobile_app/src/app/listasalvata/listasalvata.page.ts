@@ -15,7 +15,8 @@ export class ListaSalvataPage implements OnInit {
   prodotti: Prodotto[] = [];
   infoUtente: Utente = null;
 
-  constructor(private clipboard: Clipboard, private appState: AppStateService, private alertController: AlertController, private router: Router) {}
+  constructor(private clipboard: Clipboard, private appState: AppStateService,
+              private alertController: AlertController, private router: Router) {}
 
   ngOnInit() { }
 
