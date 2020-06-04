@@ -106,6 +106,7 @@ export class RegisterPage implements OnInit {
           infoUtente.nome = data.user.nome;
           infoUtente.raggioKm = data.user.raggio_km;
           infoUtente.maxRisultati = data.user.max_negozi;
+          infoUtente.codiceLista = data.user.lista_codice;
           infoUtente.ordinamento = (data.user.preferenza_filtro === 1) ? 'PREZZO' : 'DISTANZA';
           infoUtente.usaPosAttuale = true;
           infoUtente.lat = -1;

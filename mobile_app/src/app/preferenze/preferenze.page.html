@@ -4,6 +4,9 @@
       <ion-button (click)="salva($event)" [disabled]="!canSave()">
         <ion-icon slot="start" name="save"></ion-icon>
       </ion-button>
+      <ion-button (click)="logout($event)">
+        <ion-icon name="log-out-outline"></ion-icon>
+      </ion-button>
     </ion-buttons>
     <ion-title>
       Preferenze

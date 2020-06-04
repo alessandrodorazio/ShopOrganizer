@@ -109,6 +109,7 @@ export class LoginPage implements OnInit {
           infoUtente.email = this.user.email;
           infoUtente.nome = data.user.nome;
           infoUtente.raggioKm = data.user.raggio_km;
+          infoUtente.codiceLista = data.user.lista_codice;
           infoUtente.maxRisultati = data.user.max_negozi;
           infoUtente.ordinamento = (data.user.preferenza_filtro === 1) ? 'PREZZO' : 'DISTANZA';
           if (data.user.coordinate === null) {

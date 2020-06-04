@@ -15,6 +15,7 @@ export class Utente {
     raggioKm: number;
     maxRisultati: number;
     ordinamento: string;
+    codiceLista: string;
     listaSalvata: Prodotto[] = [];
     firtTime: boolean;
 
@@ -26,6 +27,7 @@ export class Utente {
         this.raggioKm = 10;
         this.maxRisultati = 10;
         this.lat = this.long = 0;
+        this.codiceLista = '';
         this.ordinamento = 'PREZZO'; // 'DISTANZA'
         this.listaSalvata = [];
 

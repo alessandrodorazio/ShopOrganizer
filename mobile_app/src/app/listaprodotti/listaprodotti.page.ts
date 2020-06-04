@@ -65,11 +65,29 @@ export class ListaProdottiPage implements OnInit {
   }
 
   effettuaRicerca(testo: string) {
+    console.log(localStorage.getItem('UTENTE.key'));
     // aggiorna testo di ricerca (il model a volte è lento e risulta non aggiornato)
     this.testoRicerca = testo.trim();
     // Stessa ricerca di prima? Si, termina
     if (this.testoRicerca === this.testoRicercaPrecedente) {
       return;
+    }
+
+    if(this.testoRicerca.charAt(0) == '#' && this.testoRicerca.length === 8) {
+      //CERCA LISTA
+      let listaId = this.testoRicerca.substr(1);
+
+      this.remoteService.getLista(listaId).subscribe((data: []) => {
+        const prodottiInLista = data.prodotti;
+        prodottiInLista.forEach(element => {
+          this.selezionaProdotto(element.id, element.pivot.quantita);
+        });
+        this.notifica('Prodotti della lista #' + listaId + ' aggiunti al carrello!');
+        this.testoRicerca = '';
+        
+      });
+      //RIMUOVI SELEZIONATI
+      return ;
     }
 
     // Qualcosa da cercare?
@@ -125,9 +143,8 @@ export class ListaProdottiPage implements OnInit {
       const infoUtente = this.appState.get(Utente.UTENTE_KEY);
       infoUtente.listaSalvata = daSalvare;
       this.appState.add(Utente.UTENTE_KEY, infoUtente);
-
-      const token = localStorage.getItem('token');
-      const user = JSON.parse(localStorage.getItem('user'));
+      console.log(infoUtente);
+      const user = infoUtente;
 
       const body = {
         user: {
@@ -136,6 +153,7 @@ export class ListaProdottiPage implements OnInit {
           }
         }
       };
+      console.log(body);
 
       async function postData(url = '', data = {}) {
         const response = await fetch(url, {
@@ -155,12 +173,11 @@ export class ListaProdottiPage implements OnInit {
         return response.json(); // parses JSON response into native JavaScript objects
       }
 
-      console.log('https://shoporganizer.herokuapp.com/public/api/users/' + user.id + '?token=' + token);
+      console.log('https://shoporganizer.herokuapp.com/public/api/users/' + user.id + '?token=' + infoUtente.token);
 
-      postData('https://shoporganizer.herokuapp.com/public/api/users/' + user.id + '?token=' + token, body)
+      postData('https://shoporganizer.herokuapp.com/public/api/users/' + user.id + '?token=' + infoUtente.token, body)
         .then(data => {
-          localStorage.removeItem('user');
-          localStorage.setItem('user', JSON.stringify(data.user));
+          console.log(data);
           // TODO show alert
         }).catch(err => console.error(err));
 

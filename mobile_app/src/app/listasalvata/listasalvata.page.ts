@@ -72,8 +72,8 @@ export class ListaSalvataPage implements OnInit {
 
   condividi(event: any) {
     // TODO: attuare condivisione
-
-    this.notifica('Lista condivisa!');
+    const infoUtente = this.appState.get(Utente.UTENTE_KEY);
+    this.notifica('Il codice della tua lista è: ' + infoUtente.codiceLista + '!');
   }
 
   async notifica(testo: string) {

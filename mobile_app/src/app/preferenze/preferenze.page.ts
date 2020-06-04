@@ -149,6 +149,11 @@ export class PreferenzePage implements OnInit, IDeactivatableComponent {
     this.nomeValido = (!this.infoUtente.nome) ? false : (this.infoUtente.nome.length > 0);
   }
 
+  logout(event: any) {
+    this.appState.remove('UTENTE.key');
+    this.router.navigate(['/login']);
+  }
+
   salva(event: any) {
     if (this.somethingChanged()) {
       const body = {

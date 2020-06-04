@@ -25,7 +25,7 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  <ion-searchbar placeholder="Cerca un prodotto..." [(ngModel)]="testoRicerca" (ionChange)="effettuaRicerca($event.target.value)" debounce="500" [disabled]="tabellaProdottiOriginale.length==0"></ion-searchbar>
+  <ion-searchbar placeholder="Cerca un prodotto o una lista..." [(ngModel)]="testoRicerca" (ionChange)="effettuaRicerca($event.target.value)" debounce="500" [disabled]="tabellaProdottiOriginale.length==0"></ion-searchbar>
 
   <ion-list *ngIf="!loading">
     <ion-item *ngFor="let prodotto of prodotti" [ngClass]="{'selected': selezionati.get(prodotto.id)>0}">

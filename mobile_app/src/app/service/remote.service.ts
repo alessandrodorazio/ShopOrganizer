@@ -32,6 +32,15 @@ export class RemoteService {
     );
   }
 
+  // restituisce una lista di prodotti...
+  getLista(lista_id): Observable<any[]> {
+    return this.http.get<any[]>(this.baseurl + '/liste/' + lista_id, this.httpOptions)
+    .pipe(
+      retry(1),
+      catchError(this.errorHandler)
+    );
+  }
+
   // restituisce l'lelenco dei negozi...
   getNegozi(): Observable<any[]> {
     return this.http.get<any[]>(this.baseurl + '/negozi', this.httpOptions)
