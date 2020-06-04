@@ -73,21 +73,22 @@ export class ListaProdottiPage implements OnInit {
       return;
     }
 
-    if(this.testoRicerca.charAt(0) == '#' && this.testoRicerca.length === 8) {
-      //CERCA LISTA
-      let listaId = this.testoRicerca.substr(1);
+    if (this.testoRicerca.charAt(0) === '#' && this.testoRicerca.length === 8) {
+      // CERCA LISTA
+      const listaId = this.testoRicerca.substr(1);
 
       this.remoteService.getLista(listaId).subscribe((data: []) => {
-        const prodottiInLista = data.prodotti;
+        const prodProp = 'prodotti';
+        const prodottiInLista = data[prodProp];
         prodottiInLista.forEach(element => {
           this.selezionaProdotto(element.id, element.pivot.quantita);
         });
         this.notifica('Prodotti della lista #' + listaId + ' aggiunti al carrello!');
         this.testoRicerca = '';
-        
       });
-      //RIMUOVI SELEZIONATI
-      return ;
+
+      // RIMUOVI SELEZIONATI
+      return;
     }
 
     // Qualcosa da cercare?
@@ -268,11 +269,8 @@ export class ListaProdottiPage implements OnInit {
     await alert.present();
   }
 
-  // Da eliminare una volta che si hanno gli url delle immagini
-
-  private random(minInc: number, maxEsc: number) {
-    minInc = Math.ceil(minInc);
-    maxEsc = Math.floor(maxEsc);
-    return Math.floor(Math.random() * (maxEsc - minInc)) + minInc;
+  isLoggedIn() {
+    const infoUtente = this.appState.get(Utente.UTENTE_KEY);
+    return (infoUtente !== null);
   }
 }

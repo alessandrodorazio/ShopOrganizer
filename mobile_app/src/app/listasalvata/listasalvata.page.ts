@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { Utente } from './../model/utente';
 import { AppStateService } from './../service/appstate.service';
@@ -11,14 +12,19 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ListaSalvataPage implements OnInit {
   prodotti: Prodotto[] = [];
+  infoUtente: Utente = null;
 
-  constructor(private appState: AppStateService, private alertController: AlertController) {}
+  constructor(private appState: AppStateService, private alertController: AlertController, private router: Router) {}
 
   ngOnInit() { }
 
   ionViewWillEnter() {
-    const infoUtente = this.appState.get(Utente.UTENTE_KEY);
-    this.prodotti = infoUtente.listaSalvata;
+    this.infoUtente = this.appState.get(Utente.UTENTE_KEY);
+    if (this.infoUtente === null) {
+      this.router.navigate(['/login']);
+    } else {
+      this.prodotti = this.infoUtente.listaSalvata;
+    }
   }
 
   rimuovi(idx: number) {
@@ -26,54 +32,63 @@ export class ListaSalvataPage implements OnInit {
   }
 
   salva(event: any) {
-    const infoUtente = this.appState.get(Utente.UTENTE_KEY);
-    infoUtente.listaSalvata = this.prodotti;
-    this.appState.add(Utente.UTENTE_KEY, infoUtente);
+    this.infoUtente.listaSalvata = this.prodotti;
+    this.appState.add(Utente.UTENTE_KEY, this.infoUtente);
 
-    let token = localStorage.getItem('token');
-    let user = JSON.parse(localStorage.getItem('user'));
-
-
-      let body = {
-        "user": {
-          "lista": {
-            "prodotti": infoUtente.listaSalvata.map(e => e.id)
-          }
+    const body = {
+      user: {
+        lista: {
+          prodotti: this.infoUtente.listaSalvata.map(e => e.id)
         }
-      };
-  
-  
-      async function postData(url = '', data = {}) {
-        const response = await fetch(url, {
-          method: 'PUT', // *GET, POST, PUT, DELETE, etc.
-          mode: 'cors', // no-cors, *cors, same-origin
-          cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-          credentials: 'same-origin', // include, *same-origin, omit
-          headers: {
-            'Content-Type': 'application/json'
-            // 'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          redirect: 'follow', // manual, *follow, error
-          referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-          body: JSON.stringify(data)
-        });
-        return response.json(); // parses JSON response into native JavaScript objects
       }
+    };
 
-      postData('https://shoporganizer.herokuapp.com/public/api/users/' + user.id + '?token=' + token, body)
-        .then(data => {
-          localStorage.removeItem('user');
-          localStorage.setItem('user', JSON.stringify(data.user));
-          //TODO show alert
-        }).catch(err => console.error(err));
+    async function postData(url = '', data = {}) {
+      const response = await fetch(url, {
+        method: 'PUT',
+        mode: 'cors',
+        cache: 'no-cache',
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        redirect: 'follow',
+        referrerPolicy: 'no-referrer',
+        body: JSON.stringify(data)
+      });
+      return response.json(); // parses JSON response into native JavaScript objects
+    }
+
+    postData('https://shoporganizer.herokuapp.com/public/api/users/' + this.infoUtente.id + '?token=' + this.infoUtente.token, body)
+      .then(data => {
+        this.infoUtente.id = data.user.id;
+        this.infoUtente.token = data.access_token;
+        this.infoUtente.email = data.email;
+        this.infoUtente.nome = data.user.nome;
+        this.infoUtente.raggioKm = data.user.raggio_km;
+        this.infoUtente.codiceLista = data.user.lista_codice;
+        this.infoUtente.maxRisultati = data.user.max_negozi;
+        this.infoUtente.ordinamento = (data.user.preferenza_filtro === 1) ? 'PREZZO' : 'DISTANZA';
+        if (data.user.coordinate === null || data.user.coordinate.coordinates[0] === -1) {
+          this.infoUtente.usaPosAttuale = true;
+          this.infoUtente.lat = -1;
+          this.infoUtente.long = -1;
+        } else {
+          this.infoUtente.usaPosAttuale = false;
+          this.infoUtente.lat = data.user.coordinate.coordinates[0];
+          this.infoUtente.long = data.user.coordinate.coordinates[1];
+        }
+        this.infoUtente.firtTime = false;
+
+        this.appState.add(Utente.UTENTE_KEY, this.infoUtente);
+    }).catch(err => console.error(err));
 
     this.notifica('Lista salvata nel profilo.');
   }
 
   condividi(event: any) {
     // TODO: attuare condivisione
-    const infoUtente = this.appState.get(Utente.UTENTE_KEY);
-    this.notifica('Il codice della tua lista è: ' + infoUtente.codiceLista + '!');
+    this.notifica('Il codice della tua lista è: ' + this.infoUtente.codiceLista + '!');
   }
 
   async notifica(testo: string) {

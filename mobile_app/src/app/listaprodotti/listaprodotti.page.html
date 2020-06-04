@@ -4,7 +4,7 @@
       <ion-button (click)="mostraSelezionati($event)">
         <ion-icon slot="start" [name]="!soloSelezionati ? 'checkmark' : 'list'"></ion-icon>
       </ion-button>
-      <ion-button (click)="salvaLista($event)">
+      <ion-button (click)="salvaLista($event)" [disabled]="!isLoggedIn()">
         <ion-icon slot="start" name="save"></ion-icon>
       </ion-button>
     </ion-buttons>

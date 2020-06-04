@@ -21,12 +21,12 @@ export class AppComponent {
     this.platform.ready().then(() => {
       this.statusBar.styleDefault();
 
-      let infoUtente = new Utente();
+      /*let infoUtente = new Utente();
       if (this.appState.get(Utente.UTENTE_KEY) !== null) {
         infoUtente = this.appState.get(Utente.UTENTE_KEY);
       } else {
         this.appState.add(Utente.UTENTE_KEY, infoUtente);
-      }
+      }*/
 
       this.splashScreen.hide();
     });

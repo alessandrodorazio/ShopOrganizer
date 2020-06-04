@@ -99,7 +99,7 @@ export class LoginPage implements OnInit {
 
     postData('https://shoporganizer.herokuapp.com/public/api/login', {email: this.user.email, password: this.user.password})
       .then(data => {
-        console.log('Logged in: ' + JSON.stringify(data)); // JSON data parsed by `response.json()` call
+        console.log('Logged in: ' + JSON.stringify(data));
 
         if (data.access_token) {
           const infoUtente = new Utente();
@@ -112,14 +112,14 @@ export class LoginPage implements OnInit {
           infoUtente.codiceLista = data.user.lista_codice;
           infoUtente.maxRisultati = data.user.max_negozi;
           infoUtente.ordinamento = (data.user.preferenza_filtro === 1) ? 'PREZZO' : 'DISTANZA';
-          if (data.user.coordinate === null) {
+          if (data.user.coordinate === null || data.user.coordinate.coordinates[0] === -1) {
             infoUtente.usaPosAttuale = true;
             infoUtente.lat = -1;
             infoUtente.long = -1;
           } else {
             infoUtente.usaPosAttuale = false;
-            infoUtente.lat = data.user.coordinate.lat;
-            infoUtente.long = data.user.coordinate.long;
+            infoUtente.lat = data.user.coordinate.coordinates[0];
+            infoUtente.long = data.user.coordinate.coordinates[1];
           }
           infoUtente.firtTime = false;
 
@@ -139,12 +139,5 @@ export class LoginPage implements OnInit {
   clear() {
     this.wereSaved = false;
     window.location.reload();
-  }
-
-  getUtente() {
-    const u = new Utente();
-    u.nome = 'Riccardo';
-    u.email = 'a@a.a';
-    return u;
   }
 }

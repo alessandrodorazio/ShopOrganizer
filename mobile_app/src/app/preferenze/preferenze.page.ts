@@ -22,14 +22,18 @@ export class PreferenzePage implements OnInit, IDeactivatableComponent {
     raggioDiRicercaItem: false,
     ordinamento: false,
   };
+  performingLogout = false;
 
   constructor(private appState: AppStateService, private router: Router,
               private nativeGeocoder: NativeGeocoder, private alertController: AlertController) {}
 
-  ngOnInit() { }
+  ngOnInit() {
+    this.performingLogout = false;
+  }
 
   ionViewWillEnter() {
     if (this.appState.get(Utente.UTENTE_KEY) === null) {
+      this.performingLogout = true;
       this.router.navigate(['/login']);
     } else {
       this.infoUtente = this.appState.get(Utente.UTENTE_KEY);
@@ -43,6 +47,11 @@ export class PreferenzePage implements OnInit, IDeactivatableComponent {
   // Chiamato quando si sta uscendo dalla pagina...
   async canDeactivate(): Promise<boolean> {
     console.log('Preferenze.canDeactivate()');
+    if (this.performingLogout) {
+      console.log('Preferenze.canDeactivate(): Logout pressed! exiting!');
+      this.performingLogout = false;
+      return true;
+    }
 
     if (!this.canSave()) {
       // Mostra alert con messaggio
@@ -150,7 +159,8 @@ export class PreferenzePage implements OnInit, IDeactivatableComponent {
   }
 
   logout(event: any) {
-    this.appState.remove('UTENTE.key');
+    this.performingLogout = true;
+    this.appState.remove(Utente.UTENTE_KEY);
     this.router.navigate(['/login']);
   }
 
@@ -163,11 +173,9 @@ export class PreferenzePage implements OnInit, IDeactivatableComponent {
           max_negozi: this.infoUtente.maxRisultati,
           preferenza_filtro: (this.infoUtente.ordinamento === 'PREZZO') ? 1 : 2,
           coordinate: (this.infoUtente.usaPosAttuale) ? {
-            lat: -1,
-            long: -1
+            coordinates: [-1, -1]
           } : {
-            lat: this.infoUtente.lat,
-            long: this.infoUtente.long
+            coordinates: [this.infoUtente.lat, this.infoUtente.long]
           },
           lista: {
             prodotti: []
