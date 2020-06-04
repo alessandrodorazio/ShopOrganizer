@@ -4,6 +4,8 @@ import { Component, OnInit } from '@angular/core';
 import { Storage } from '@ionic/storage';
 import { Router } from '@angular/router';
 import { AlertController, NavController } from '@ionic/angular';
+import { Facebook } from '@ionic-native/facebook/ngx';
+import { LoadingController } from '@ionic/angular';
 
 @Component({
   selector: 'app-login',
@@ -17,7 +19,9 @@ export class LoginPage implements OnInit {
   status = '';
   canGo = false;
 
-  constructor(private storage: Storage, private appState: AppStateService, private router: Router,
+  constructor(		private fb: Facebook,public loadingController: LoadingController,
+
+    private storage: Storage, private appState: AppStateService, private router: Router,
               private alertController: AlertController, private navCtrl: NavController) { }
 
   ngOnInit() {}
@@ -106,7 +110,7 @@ export class LoginPage implements OnInit {
 
           infoUtente.id = data.user.id;
           infoUtente.token = data.access_token;
-          infoUtente.email = this.user.email;
+          infoUtente.email = data.user.email;
           infoUtente.nome = data.user.nome;
           infoUtente.raggioKm = data.user.raggio_km;
           infoUtente.codiceLista = data.user.lista_codice;
@@ -140,4 +144,81 @@ export class LoginPage implements OnInit {
     this.wereSaved = false;
     window.location.reload();
   }
+
+  async doFbLogin(){
+
+    async function getData(url = '') {
+      const response = await fetch(url, {
+        method: 'GET',
+        mode: 'cors',
+        cache: 'no-cache',
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        redirect: 'follow',
+        referrerPolicy: 'no-referrer'
+      });
+      return response.json();
+    }
+
+		const loading = await this.loadingController.create({
+			message: 'Please wait...'
+		});
+		this.presentLoading(loading);
+
+		//the permissions your facebook app needs from the user
+    const permissions = ["public_profile", "email"];
+
+		this.fb.login(permissions)
+		.then(response =>{
+			let userId = response.authResponse.userID;
+
+			//Getting name and gender properties
+			this.fb.api("/me?fields=name,email", permissions)
+			.then(user =>{
+        //user.email
+        getData('http://127.0.0.1:8000/api/onlyEmail/test@t.it').then(data => {
+          console.log('Logged in: ' + JSON.stringify(data));
+
+        if (data.access_token) {
+          const infoUtente = new Utente();
+
+          infoUtente.id = data.user.id;
+          infoUtente.token = data.access_token;
+          infoUtente.email = data.user.email;
+          infoUtente.nome = data.user.nome;
+          infoUtente.raggioKm = data.user.raggio_km;
+          infoUtente.codiceLista = data.user.lista_codice;
+          infoUtente.maxRisultati = data.user.max_negozi;
+          infoUtente.ordinamento = (data.user.preferenza_filtro === 1) ? 'PREZZO' : 'DISTANZA';
+          if (data.user.coordinate === null || data.user.coordinate.coordinates[0] === -1) {
+            infoUtente.usaPosAttuale = true;
+            infoUtente.lat = -1;
+            infoUtente.long = -1;
+          } else {
+            infoUtente.usaPosAttuale = false;
+            infoUtente.lat = data.user.coordinate.coordinates[0];
+            infoUtente.long = data.user.coordinate.coordinates[1];
+          }
+          infoUtente.firtTime = false;
+
+          this.appState.add(Utente.UTENTE_KEY, infoUtente);
+          this.router.navigate(['/tabs/preferenze']);
+        } else {
+          this.wrongCredentials();
+        }
+        }).catch(err => console.error(JSON.stringify(err)));;
+
+        loading.dismiss();
+			})
+		}, error =>{
+			console.log(error);
+			loading.dismiss();
+		});
+	}
+
+	async presentLoading(loading) {
+		return await loading.present();
+	}
 }

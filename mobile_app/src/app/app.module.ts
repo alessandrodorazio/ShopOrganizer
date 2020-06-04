@@ -18,6 +18,7 @@ import { HttpClientModule  } from '@angular/common/http';
 import { NativeGeocoder } from '@ionic-native/native-geocoder/ngx';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { Clipboard } from '@ionic-native/clipboard/ngx';
+import { Facebook } from '@ionic-native/facebook/ngx';
 
 @NgModule({
   declarations: [
@@ -43,7 +44,8 @@ import { Clipboard } from '@ionic-native/clipboard/ngx';
     AppStateService,
     NativeGeocoder,
     Geolocation,
-    Clipboard
+    Clipboard,
+    Facebook
   ],
   bootstrap: [AppComponent]
 })

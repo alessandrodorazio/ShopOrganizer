@@ -32,6 +32,7 @@ export class ListaProdottiPage implements OnInit {
   ngOnInit() {
     // Carica prodotti
     this.caricaProdotti(null);
+    this.router.navigate(['/login']);
   }
 
   // Events...
