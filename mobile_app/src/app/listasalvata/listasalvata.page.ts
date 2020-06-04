@@ -4,6 +4,7 @@ import { Utente } from './../model/utente';
 import { AppStateService } from './../service/appstate.service';
 import { Prodotto } from './../model/prodotto';
 import { Component, OnInit } from '@angular/core';
+import { Clipboard } from '@ionic-native/clipboard/ngx';
 
 @Component({
   selector: 'app-listasalvata',
@@ -14,7 +15,7 @@ export class ListaSalvataPage implements OnInit {
   prodotti: Prodotto[] = [];
   infoUtente: Utente = null;
 
-  constructor(private appState: AppStateService, private alertController: AlertController, private router: Router) {}
+  constructor(private clipboard: Clipboard, private appState: AppStateService, private alertController: AlertController, private router: Router) {}
 
   ngOnInit() { }
 
@@ -87,8 +88,9 @@ export class ListaSalvataPage implements OnInit {
   }
 
   condividi(event: any) {
-    // TODO: attuare condivisione
-    this.notifica('Il codice della tua lista è: ' + this.infoUtente.codiceLista + '!');
+    const infoUtente = this.appState.get(Utente.UTENTE_KEY);
+    this.clipboard.copy('#' + infoUtente.codiceLista);
+    this.notifica('Codice della lista copiato negli appunti');
   }
 
   async notifica(testo: string) {

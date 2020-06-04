@@ -80,6 +80,7 @@ export class ListaProdottiPage implements OnInit {
       this.remoteService.getLista(listaId).subscribe((data: []) => {
         const prodProp = 'prodotti';
         const prodottiInLista = data[prodProp];
+        this.selezionati.clear();
         prodottiInLista.forEach(element => {
           this.selezionaProdotto(element.id, element.pivot.quantita);
         });

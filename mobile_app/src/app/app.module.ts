@@ -17,6 +17,7 @@ import { HttpClientModule  } from '@angular/common/http';
 
 import { NativeGeocoder } from '@ionic-native/native-geocoder/ngx';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
+import { Clipboard } from '@ionic-native/clipboard/ngx';
 
 @NgModule({
   declarations: [
@@ -41,7 +42,8 @@ import { Geolocation } from '@ionic-native/geolocation/ngx';
     RemoteService,
     AppStateService,
     NativeGeocoder,
-    Geolocation
+    Geolocation,
+    Clipboard
   ],
   bootstrap: [AppComponent]
 })
