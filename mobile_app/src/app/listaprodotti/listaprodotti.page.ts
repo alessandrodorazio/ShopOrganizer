@@ -88,7 +88,6 @@ export class ListaProdottiPage implements OnInit {
         this.testoRicerca = '';
       });
 
-      // RIMUOVI SELEZIONATI
       return;
     }
 
