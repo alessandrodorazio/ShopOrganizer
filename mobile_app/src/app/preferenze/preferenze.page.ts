@@ -178,7 +178,7 @@ export class PreferenzePage implements OnInit, IDeactivatableComponent {
             coordinates: [this.infoUtente.lat, this.infoUtente.long]
           },
           lista: {
-            prodotti: []
+            prodotti: this.infoUtente.listaSalvata.map(e => e.id)
           }
         }
       };
