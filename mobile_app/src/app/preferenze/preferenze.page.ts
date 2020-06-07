@@ -123,6 +123,7 @@ export class PreferenzePage implements OnInit, IDeactivatableComponent {
   }
 
   localizzaIndirizzo(event: any) {
+    if(event.target.value.toUppercase() == this.infoUtente.indirizzo.toUpperCase()) return ;
     this.infoUtente.indirizzo = ('' + event.target.value).toUpperCase();
 
     const options: NativeGeocoderOptions = {
@@ -135,12 +136,11 @@ export class PreferenzePage implements OnInit, IDeactivatableComponent {
         this.infoUtente.lat = coordinates[0].latitude;
         this.infoUtente.long = coordinates[0].longitude;
         this.indirizzoValido = true;
-        this.notifica('Coordinate: ' + coordinates[0].latitude + ' ' + coordinates[0].longitude);
-        this.nativeGeocoder.reverseGeocode(this.infoUtente.lat, this.infoUtente.long, options)
+        this.nativeGeocoder.reverseGeocode(+coordinates[0].latitude, +coordinates[0].longitude, options)
           .then((result: NativeGeocoderResult[]) => {
             console.log('Address decoded: ' + result[0].locality);
-            // this.infoUtente.indirizzo = result[0].locality;
-            this.infoUtente.indirizzo = 'DECODIFICATO';
+            this.infoUtente.indirizzo = result[0].thoroughfare + ', ' +  result[0].subThoroughfare + ' ' + result[0].locality;
+            //this.infoUtente.indirizzo = 'DECODIFICATO';
           })
           .catch((error: any) => {
             console.log('Reverse Geocode: ' + error);

@@ -43,7 +43,7 @@
         <ion-button *ngIf="selezionati.get(prodotto.id)>0" fill="clear" color="secondary" (click)="selezionaProdotto(prodotto.id, selezionati.get(prodotto.id)-1)">
           <ion-icon name="remove-circle-outline"></ion-icon>
         </ion-button>
-        <ion-button ill="clear" color="primary">
+        <ion-button fill="clear" color="primary">
           {{selezionati.get(prodotto.id)}}
         </ion-button>
         <ion-button fill="clear" color="primary" (click)="selezionaProdotto(prodotto.id, selezionati.get(prodotto.id)+1)">
