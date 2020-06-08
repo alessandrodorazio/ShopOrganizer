@@ -15,6 +15,7 @@ export class PreferenzePage implements OnInit, IDeactivatableComponent {
   infoUtente = new Utente();
   infoUtenteBackup: Utente;
   token: string;
+  indirizzo: string;
   indirizzoValido = true;
   nomeValido = false;
   display = {
@@ -37,6 +38,7 @@ export class PreferenzePage implements OnInit, IDeactivatableComponent {
       this.router.navigate(['/login']);
     } else {
       this.infoUtente = this.appState.get(Utente.UTENTE_KEY);
+      this.indirizzo = this.infoUtente.indirizzo;
       console.log('infoUtente Enter = ' + JSON.stringify(this.infoUtente));
 
       this.nomeValido = (this.infoUtente.nome === null) ? false : (this.infoUtente.nome.length > 0);
@@ -123,8 +125,8 @@ export class PreferenzePage implements OnInit, IDeactivatableComponent {
   }
 
   localizzaIndirizzo(event: any) {
-    if(event.target.value.toUppercase() == this.infoUtente.indirizzo.toUpperCase()) return ;
-    this.infoUtente.indirizzo = ('' + event.target.value).toUpperCase();
+    this.indirizzo = ('' + event.target.value).toUpperCase();
+    if (this.indirizzo === this.infoUtente.indirizzo) { return; }
 
     const options: NativeGeocoderOptions = {
       useLocale: true,
@@ -139,8 +141,9 @@ export class PreferenzePage implements OnInit, IDeactivatableComponent {
         this.nativeGeocoder.reverseGeocode(+coordinates[0].latitude, +coordinates[0].longitude, options)
           .then((result: NativeGeocoderResult[]) => {
             console.log('Address decoded: ' + result[0].locality);
-            this.infoUtente.indirizzo = result[0].thoroughfare + ', ' +  result[0].subThoroughfare + ' ' + result[0].locality;
-            //this.infoUtente.indirizzo = 'DECODIFICATO';
+            this.indirizzo = (result[0].thoroughfare + ', ' +  result[0].subThoroughfare + ' ' + result[0].locality).toUpperCase();
+            this.infoUtente.indirizzo = this.indirizzo;
+            // this.infoUtente.indirizzo = 'DECODIFICATO';
           })
           .catch((error: any) => {
             console.log('Reverse Geocode: ' + error);

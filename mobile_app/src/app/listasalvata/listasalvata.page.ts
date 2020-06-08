@@ -37,10 +37,11 @@ export class ListaSalvataPage implements OnInit {
     this.infoUtente.listaSalvata = this.prodotti;
     this.appState.add(Utente.UTENTE_KEY, this.infoUtente);
 
+    const prodList = this.infoUtente.listaSalvata.map(e => e.id);
     const body = {
       user: {
         lista: {
-          prodotti: this.infoUtente.listaSalvata.map(e => e.id)
+          prodotti: prodList
         }
       }
     };
@@ -92,6 +93,10 @@ export class ListaSalvataPage implements OnInit {
     const infoUtente = this.appState.get(Utente.UTENTE_KEY);
     this.clipboard.copy('#' + infoUtente.codiceLista);
     this.notifica('Codice della lista copiato negli appunti');
+  }
+
+  importaLista(event: any) {
+    this.router.navigate(['/tabs/listaprodotti'], { queryParams: { listaId: this.infoUtente.codiceLista } });
   }
 
   async notifica(testo: string) {

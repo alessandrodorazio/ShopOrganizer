@@ -1,5 +1,5 @@
 import { ProdottoPrezzato } from './../model/prodotto';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Utente } from './../model/utente';
 import { AppStateService } from './../service/appstate.service';
 import { RemoteService } from '../service/remote.service';
@@ -27,11 +27,30 @@ export class ListaProdottiPage implements OnInit {
   elementiSelezionati = false;
 
   constructor(private remoteService: RemoteService, private alertController: AlertController,
-              private appState: AppStateService, private router: Router) {}
+              private appState: AppStateService, private router: Router, private route: ActivatedRoute) {}
 
   ngOnInit() {
     // Carica prodotti
     this.caricaProdotti(null);
+
+    // Recupera parametro
+    this.route.queryParams.subscribe(params => {
+      const paramName = 'listaId';
+      const listaId = params[paramName];
+      console.log('Richiesta lista da aggiungere: ' + listaId);
+
+      this.remoteService.getLista(listaId).subscribe((data: []) => {
+        if (data) {
+          const prodProp = 'prodotti';
+          const prodottiInLista = data[prodProp];
+          // this.selezionati.clear();
+          prodottiInLista.forEach((element: { id: number; pivot: { quantita: number; }; }) => {
+            this.selezionaProdotto(element.id, element.pivot.quantita);
+          });
+          this.notifica('Prodotti della propria lista aggiunti al carrello!');
+        }
+      });
+    });
   }
 
   // Events...
@@ -80,8 +99,8 @@ export class ListaProdottiPage implements OnInit {
       this.remoteService.getLista(listaId).subscribe((data: []) => {
         const prodProp = 'prodotti';
         const prodottiInLista = data[prodProp];
-        //this.selezionati.clear();
-        prodottiInLista.forEach(element => {
+        // this.selezionati.clear();
+        prodottiInLista.forEach((element: { id: number; pivot: { quantita: any; }; }) => {
           this.selezionaProdotto(element.id, element.pivot.quantita);
         });
         this.notifica('Prodotti della lista #' + listaId + ' aggiunti al carrello!');
@@ -150,7 +169,7 @@ export class ListaProdottiPage implements OnInit {
       const body = {
         user: {
             lista: {
-              prodotti: infoUtente.listaSalvata.map(e => e.id)
+              prodotti: infoUtente.listaSalvata.map((e: { id: any; }) => e.id)
           }
         }
       };

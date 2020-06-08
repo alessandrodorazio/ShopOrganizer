@@ -4,6 +4,9 @@
       <ion-button (click)="condividi($event)">
         <ion-icon slot="start" name="share"></ion-icon>
       </ion-button>
+      <ion-button (click)="salva($event)">
+        <ion-icon slot="start" name="save"></ion-icon>
+      </ion-button>
     </ion-buttons>
     <ion-title>
       Lista Salvata
@@ -42,8 +45,8 @@
   </ion-list>
 
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button (click)="salva($event)">
-      <ion-icon name="save"></ion-icon>
+    <ion-fab-button >
+      <ion-icon name="download-outline" (click)="importaLista($event)"></ion-icon>
     </ion-fab-button>
   </ion-fab>
 </ion-content>
