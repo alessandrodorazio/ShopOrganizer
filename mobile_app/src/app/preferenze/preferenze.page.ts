@@ -135,18 +135,19 @@ export class PreferenzePage implements OnInit, IDeactivatableComponent {
 
     this.nativeGeocoder.forwardGeocode(this.infoUtente.indirizzo, options)
       .then((coordinates: any) => {
-        this.infoUtente.lat = coordinates[0].latitude;
-        this.infoUtente.long = coordinates[0].longitude;
-        this.indirizzoValido = true;
+        this.infoUtente.lat = +coordinates[0].latitude;
+        this.infoUtente.long = +coordinates[0].longitude;
+
         this.nativeGeocoder.reverseGeocode(+coordinates[0].latitude, +coordinates[0].longitude, options)
           .then((result: NativeGeocoderResult[]) => {
             console.log('Address decoded: ' + result[0].locality);
             this.indirizzo = (result[0].thoroughfare + ', ' +  result[0].subThoroughfare + ' ' + result[0].locality).toUpperCase();
             this.infoUtente.indirizzo = this.indirizzo;
-            // this.infoUtente.indirizzo = 'DECODIFICATO';
+            this.indirizzoValido = true;
           })
           .catch((error: any) => {
             console.log('Reverse Geocode: ' + error);
+            this.indirizzoValido = false;
             this.notifica(error);
           });
       })
