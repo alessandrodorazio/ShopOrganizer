@@ -9,27 +9,30 @@
 
 <ion-content>
   <ion-card>
+    <iframe  height="50%" width="100%" [src]="negozio.mapsLink" name="iframe_a"></iframe>
     <ion-card-header>
-      <ion-card-subtitle>{{ negozio.citta }} a circa {{ negozio.distanza | distanza }}</ion-card-subtitle>
+      <ion-card-subtitle><ion-icon name="location-outline"></ion-icon> A {{ negozio.distanza | distanza }} da te</ion-card-subtitle>
       <ion-card-title>{{ negozio.nome }}</ion-card-title>
+      <ion-card-subtitle>
+        <ion-icon name="wallet-outline"></ion-icon>
+        Spesa totale € {{ negozio.totale | number: '1.2-2' }}
+      </ion-card-subtitle>
+
     </ion-card-header>
   
     <ion-card-content>
-      Spesa totale € {{ negozio.totale | number: '1.2-2' }}
+
+      <ion-list>
+        <ion-item *ngFor="let prodotto of selezionati">
+          <ion-label>
+            <h2>{{ prodotto.nome }}&nbsp;{{ prodotto.marca }}</h2>
+            <p>{{ prodotto.pezzatura }}</p>
+          </ion-label>
+          <ion-label class="ion-text-right">
+            <h4>€ {{ prezzoProdotto(prodotto.id) | number: '1.2-2' }}</h4>
+          </ion-label>
+        </ion-item>
+      </ion-list>
     </ion-card-content>
   </ion-card>
-  <ion-list>
-    <ion-item *ngFor="let prodotto of selezionati">
-      <ion-avatar slot="start">
-        <img src="{{ prodotto.immagine }}">
-      </ion-avatar>
-      <ion-label>
-        <h2>{{ prodotto.nome }}&nbsp;{{ prodotto.marca }}</h2>
-        <p>{{ prodotto.pezzatura }}</p>
-      </ion-label>
-      <ion-label float-right>
-        <h3>{{ prodotto.quantita }} x € {{ prezzoProdotto(prodotto.id) | number: '1.2-2' }} = € {{ (prodotto.quantita*prezzoProdotto(prodotto.id)) | number: '1.2-2' }} </h3>
-      </ion-label>
-    </ion-item>
-  </ion-list>
 </ion-content>

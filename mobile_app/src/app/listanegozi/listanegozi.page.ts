@@ -7,6 +7,7 @@ import { AppStateService } from './../service/appstate.service';
 import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-listanegozi',
@@ -24,7 +25,7 @@ export class ListaNegoziPage implements OnInit {
   latitude = 0;
   longitude = 0;
 
-  constructor(private appState: AppStateService, private remoteService: RemoteService,
+  constructor(private sanitize: DomSanitizer, private appState: AppStateService, private remoteService: RemoteService,
               private modalController: ModalController, private geoLoc: Geolocation) { }
 
   ngOnInit() {
@@ -60,6 +61,7 @@ export class ListaNegoziPage implements OnInit {
     this.remoteService.getNegozi().subscribe((data: []) => {
       data.forEach(el => {
         const n = new Negozio();
+        console.log(el);
 
         let prop = 'id';
         n.id = el[prop];
@@ -80,6 +82,9 @@ export class ListaNegoziPage implements OnInit {
         const prop2 = 'coordinates';
         n.coordinate.long = el[prop][prop2][0];
         n.coordinate.lat = el[prop][prop2][1];
+
+        let address = "https://www.google.com/maps/embed/v1/place?q="+el[prop][prop2][1]+","+ el[prop][prop2][0] + "&key=AIzaSyCI5i8GV7gaXt9YuOxohrMfRq-gwhY0hIM&zoom=13"
+        n.mapsLink = this.sanitize.bypassSecurityTrustResourceUrl(address);
 
         // copia i prodotti
         prop = 'prodotti';
@@ -126,7 +131,8 @@ export class ListaNegoziPage implements OnInit {
       nt.distanza = this.calcolaDistanzaInKm(this.latitude, this.longitude, n.coordinate.lat, n.coordinate.long);
       console.log('Distanza = ' + nt.distanza + ', ' + this.infoUtente.raggioKm);
       // Siamo nel raggio massimo richiesto?
-      if (nt.distanza <= this.infoUtente.raggioKm) {
+      //if (nt.distanza <= this.infoUtente.raggioKm) {
+      if(true) {
         this.selezionati.forEach(sel => {
           nt.totale += n.prodotti.filter(p => p.id === sel.id).reduce((tot, el) => {
             return tot + (el.prezzo * sel.quantita);

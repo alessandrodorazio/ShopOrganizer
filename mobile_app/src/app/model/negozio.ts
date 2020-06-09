@@ -1,5 +1,6 @@
 import { ProdottoPrezzato } from './prodotto';
 import { Point } from './point';
+import { SafeResourceUrl } from '@angular/platform-browser';
 
 export class Negozio {
     id: number;
@@ -11,6 +12,7 @@ export class Negozio {
     createdat: Date;
     updatedat: Date;
     coordinate: Point;
+    mapsLink: SafeResourceUrl;
     prodotti: ProdottoPrezzato[];
 
     constructor() {

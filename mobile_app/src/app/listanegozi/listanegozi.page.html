@@ -15,25 +15,26 @@
       <ion-select-option value="PREZZO">Prezzo</ion-select-option>
     </ion-select>
   </ion-item>
-  <ion-card *ngFor="let negozio of risultatoView; let idx of index">
-    <ion-card-header>
-      <ion-grid>
-        <ion-row>
-          <ion-col><ion-card-title>{{ negozio.nome }}</ion-card-title></ion-col>
-          <ion-col class="text-right"><ion-card-title>€ {{ negozio.totale | number: '1.2-2' }}</ion-card-title></ion-col>
-        </ion-row>
-      </ion-grid>
-    </ion-card-header>
-  
+  <ion-card (click)="apriDettaglio(negozio.id)" *ngFor="let negozio of risultatoView; let idx of index">
+    <iframe  height="50%" width="100%" [src]="negozio.mapsLink" name="iframe_a"></iframe>
     <ion-card-content>
-      <ion-grid>
-        <ion-row>
-          <ion-col>{{ negozio.distanza | distanza }}</ion-col>
-          <ion-col class="text-right"><ion-button size="small" fill="clear" (click)="apriDettaglio(negozio.id)">Prezzi</ion-button></ion-col>
-        </ion-row>
-      </ion-grid>
+      <ion-row>
+        <ion-col>
+          <ion-card-subtitle>
+            <ion-icon name="location-outline"></ion-icon>
+            {{ negozio.distanza | distanza }}
+          </ion-card-subtitle>
+          <ion-card-title>{{ negozio.nome }}</ion-card-title>
+        </ion-col>
+        <ion-col class="text-right" color="success">
+          <ion-card-title color="primary">€ {{ negozio.totale | number: '1.2-2' }}</ion-card-title></ion-col>
+
+      </ion-row>
+      
+
+
     </ion-card-content>
-  </ion-card>
+    </ion-card>
 </ion-content>
 
 <ion-content *ngIf="loading">
