@@ -19,9 +19,8 @@ export class LoginPage implements OnInit {
   status = '';
   canGo = false;
 
-  constructor(		private fb: Facebook,public loadingController: LoadingController,
-
-    private storage: Storage, private appState: AppStateService, private router: Router,
+  constructor(private fb: Facebook, private loadingController: LoadingController,
+              private storage: Storage, private appState: AppStateService, private router: Router,
               private alertController: AlertController, private navCtrl: NavController) { }
 
   ngOnInit() {}
@@ -67,11 +66,7 @@ export class LoginPage implements OnInit {
   }
 
   validateEmail(email) {
-    if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
-      return true;
-    }
-
-    return false;
+    return (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email));
   }
 
   doLogin() {
@@ -101,39 +96,37 @@ export class LoginPage implements OnInit {
       return response.json();
     }
 
-    postData('https://shoporganizer.herokuapp.com/public/api/login', {email: this.user.email, password: this.user.password})
-      .then(data => {
-        console.log('Logged in: ' + JSON.stringify(data));
+    postData('https://shoporganizer.herokuapp.com/public/api/login', {email: this.user.email, password: this.user.password}).then(data => {
+      console.log('Logged in: ' + JSON.stringify(data));
 
-        if (data.access_token) {
-          const infoUtente = new Utente();
+      if (data.access_token) {
+        const infoUtente = new Utente();
 
-          infoUtente.id = data.user.id;
-          infoUtente.token = data.access_token;
-          infoUtente.email = data.user.email;
-          infoUtente.nome = data.user.nome;
-          infoUtente.raggioKm = data.user.raggio_km;
-          infoUtente.codiceLista = data.user.lista_codice;
-          infoUtente.maxRisultati = data.user.max_negozi;
-          infoUtente.ordinamento = (data.user.preferenza_filtro === 1) ? 'PREZZO' : 'DISTANZA';
-          if (data.user.coordinate === null || data.user.coordinate.coordinates[0] === -1) {
-            infoUtente.usaPosAttuale = true;
-            infoUtente.lat = -1;
-            infoUtente.long = -1;
-          } else {
-            infoUtente.usaPosAttuale = false;
-            infoUtente.lat = data.user.coordinate.coordinates[0];
-            infoUtente.long = data.user.coordinate.coordinates[1];
-          }
-          infoUtente.firtTime = false;
-
-          this.appState.add(Utente.UTENTE_KEY, infoUtente);
-          this.router.navigate(['/tabs/preferenze']);
+        infoUtente.id = data.user.id;
+        infoUtente.token = data.access_token;
+        infoUtente.email = data.user.email;
+        infoUtente.nome = data.user.nome;
+        infoUtente.raggioKm = data.user.raggio_km;
+        infoUtente.codiceLista = data.user.lista_codice;
+        infoUtente.maxRisultati = data.user.max_negozi;
+        infoUtente.ordinamento = (data.user.preferenza_filtro === 1) ? 'PREZZO' : 'DISTANZA';
+        if (data.user.coordinate === null || data.user.coordinate.coordinates[0] === -1) {
+          infoUtente.usaPosAttuale = true;
+          infoUtente.lat = -1;
+          infoUtente.long = -1;
         } else {
-          this.wrongCredentials();
+          infoUtente.usaPosAttuale = false;
+          infoUtente.lat = data.user.coordinate.coordinates[0];
+          infoUtente.long = data.user.coordinate.coordinates[1];
         }
-      })
-      .catch(err => console.error(err));
+        infoUtente.firtTime = false;
+
+        this.appState.add(Utente.UTENTE_KEY, infoUtente);
+        this.router.navigate(['/tabs/preferenze']);
+      } else {
+        this.wrongCredentials();
+      }
+    }).catch(err => console.error(err));
   }
 
   register() {
@@ -145,8 +138,7 @@ export class LoginPage implements OnInit {
     window.location.reload();
   }
 
-  async doFbLogin(){
-
+  async doFbLogin() {
     async function getData(url = '') {
       const response = await fetch(url, {
         method: 'GET',
@@ -162,63 +154,61 @@ export class LoginPage implements OnInit {
       return response.json();
     }
 
-		const loading = await this.loadingController.create({
-			message: 'Please wait...'
-		});
-		this.presentLoading(loading);
+    const loading = await this.loadingController.create({
+      message: 'Please wait...'
+    });
+    this.presentLoading(loading);
 
-		//the permissions your facebook app needs from the user
-    const permissions = ["public_profile", "email"];
+    // the permissions your facebook app needs from the user
+    const permissions = ['public_profile', 'email'];
 
-		this.fb.login(permissions)
-		.then(response =>{
-			let userId = response.authResponse.userID;
+    this.fb.login(permissions).then(response => {
+      const userId = response.authResponse.userID;
 
-			//Getting name and gender properties
-			this.fb.api("/me?fields=name,email", permissions)
-			.then(user =>{
-        //user.email
+      // Getting name and gender properties
+      this.fb.api('/me?fields=name,email', permissions).then(user => {
+        // user.email
         getData('https://shoporganizer.herokuapp.com/public/api/onlyEmail/' + user.email).then(data => {
           console.log('Logged in: ' + JSON.stringify(data));
 
-        if (data.access_token) {
-          const infoUtente = new Utente();
+          if (data.access_token) {
+            const infoUtente = new Utente();
 
-          infoUtente.id = data.user.id;
-          infoUtente.token = data.access_token;
-          infoUtente.email = data.user.email;
-          infoUtente.nome = data.user.nome;
-          infoUtente.raggioKm = data.user.raggio_km;
-          infoUtente.codiceLista = data.user.lista_codice;
-          infoUtente.maxRisultati = data.user.max_negozi;
-          infoUtente.ordinamento = (data.user.preferenza_filtro === 1) ? 'PREZZO' : 'DISTANZA';
-          if (data.user.coordinate === null || data.user.coordinate.coordinates[0] === -1) {
-            infoUtente.usaPosAttuale = true;
-            infoUtente.lat = -1;
-            infoUtente.long = -1;
+            infoUtente.id = data.user.id;
+            infoUtente.token = data.access_token;
+            infoUtente.email = data.user.email;
+            infoUtente.nome = data.user.nome;
+            infoUtente.raggioKm = data.user.raggio_km;
+            infoUtente.codiceLista = data.user.lista_codice;
+            infoUtente.maxRisultati = data.user.max_negozi;
+            infoUtente.ordinamento = (data.user.preferenza_filtro === 1) ? 'PREZZO' : 'DISTANZA';
+            if (data.user.coordinate === null || data.user.coordinate.coordinates[0] === -1) {
+              infoUtente.usaPosAttuale = true;
+              infoUtente.lat = -1;
+              infoUtente.long = -1;
+            } else {
+              infoUtente.usaPosAttuale = false;
+              infoUtente.lat = data.user.coordinate.coordinates[0];
+              infoUtente.long = data.user.coordinate.coordinates[1];
+            }
+            infoUtente.firtTime = false;
+
+            this.appState.add(Utente.UTENTE_KEY, infoUtente);
+            this.router.navigate(['/tabs/preferenze']);
           } else {
-            infoUtente.usaPosAttuale = false;
-            infoUtente.lat = data.user.coordinate.coordinates[0];
-            infoUtente.long = data.user.coordinate.coordinates[1];
+            this.wrongCredentials();
           }
-          infoUtente.firtTime = false;
-
-          this.appState.add(Utente.UTENTE_KEY, infoUtente);
-          this.router.navigate(['/tabs/preferenze']);
-        } else {
-          this.wrongCredentials();
-        }
-        }).catch(err => console.error(JSON.stringify(err)));;
+        }).catch(err => console.error(JSON.stringify(err)));
 
         loading.dismiss();
-			})
-		}, error =>{
-			console.log(error);
-			loading.dismiss();
-		});
-	}
+      });
+    }, error => {
+      console.log(error);
+      loading.dismiss();
+    });
+  }
 
-	async presentLoading(loading) {
-		return await loading.present();
-	}
+  async presentLoading(loading) {
+    return await loading.present();
+  }
 }

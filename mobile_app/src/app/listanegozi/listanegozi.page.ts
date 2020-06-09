@@ -83,7 +83,8 @@ export class ListaNegoziPage implements OnInit {
         n.coordinate.long = el[prop][prop2][0];
         n.coordinate.lat = el[prop][prop2][1];
 
-        let address = "https://www.google.com/maps/embed/v1/place?q="+el[prop][prop2][1]+","+ el[prop][prop2][0] + "&key=AIzaSyCI5i8GV7gaXt9YuOxohrMfRq-gwhY0hIM&zoom=13"
+        const address = 'https://www.google.com/maps/embed/v1/place?q=' + el[prop][prop2][1] + ',' + el[prop][prop2][0] +
+                      '&key=AIzaSyCI5i8GV7gaXt9YuOxohrMfRq-gwhY0hIM&zoom=13';
         n.mapsLink = this.sanitize.bypassSecurityTrustResourceUrl(address);
 
         // copia i prodotti
@@ -131,8 +132,8 @@ export class ListaNegoziPage implements OnInit {
       nt.distanza = this.calcolaDistanzaInKm(this.latitude, this.longitude, n.coordinate.lat, n.coordinate.long);
       console.log('Distanza = ' + nt.distanza + ', ' + this.infoUtente.raggioKm);
       // Siamo nel raggio massimo richiesto?
-      //if (nt.distanza <= this.infoUtente.raggioKm) {
-      if(true) {
+      // if (nt.distanza <= this.infoUtente.raggioKm) {
+      if (true) {
         this.selezionati.forEach(sel => {
           nt.totale += n.prodotti.filter(p => p.id === sel.id).reduce((tot, el) => {
             return tot + (el.prezzo * sel.quantita);
