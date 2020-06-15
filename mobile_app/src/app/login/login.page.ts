@@ -121,6 +121,7 @@ export class LoginPage implements OnInit {
         }
         infoUtente.firtTime = false;
 
+
         this.appState.add(Utente.UTENTE_KEY, infoUtente);
         this.router.navigate(['/tabs/preferenze']);
       } else {

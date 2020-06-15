@@ -133,7 +133,7 @@ export class PreferenzePage implements OnInit, IDeactivatableComponent {
       maxResults: 1
     };
 
-    this.nativeGeocoder.forwardGeocode(this.infoUtente.indirizzo, options)
+    this.nativeGeocoder.forwardGeocode(this.indirizzo, options)
       .then((coordinates: any) => {
         this.infoUtente.lat = +coordinates[0].latitude;
         this.infoUtente.long = +coordinates[0].longitude;
@@ -169,6 +169,7 @@ export class PreferenzePage implements OnInit, IDeactivatableComponent {
   }
 
   salva(event: any) {
+    console.log(this.infoUtente)
     if (this.somethingChanged()) {
       const body = {
         user: {
