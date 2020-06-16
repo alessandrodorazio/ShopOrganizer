@@ -15,7 +15,18 @@ export class DettaglioprodottiPage implements OnInit {
   constructor(private modalController: ModalController) { }
 
   ngOnInit() {
+    this.selezionati.sort(this.comparaProdotti);
   }
+
+  comparaProdotti( prodotto1, prodotto2 ) {
+    if ( prodotto1.nome < prodotto2.nome ){
+      return -1;
+    }
+    if ( prodotto1.nome > prodotto2.nome ){
+      return 1;
+    }
+    return 0;
+  };
 
   prezzoProdotto(id: number): number {
     const prod = this.negozio.prodotti.filter(p => (p.id === id))[0];

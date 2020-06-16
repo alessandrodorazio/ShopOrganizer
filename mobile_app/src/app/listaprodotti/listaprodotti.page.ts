@@ -53,6 +53,16 @@ export class ListaProdottiPage implements OnInit {
     });
   }
 
+  comparaProdotti( prodotto1, prodotto2 ) {
+    if ( prodotto1.nome < prodotto2.nome ){
+      return -1;
+    }
+    if ( prodotto1.nome > prodotto2.nome ){
+      return 1;
+    }
+    return 0;
+  };
+
   // Events...
 
   caricaAltri(event: any) {
@@ -78,6 +88,7 @@ export class ListaProdottiPage implements OnInit {
     // Copia la finestra nell'elenco visualizzato...
     for (let i = this.indiceInizio; i < this.min(this.indiceInizio + EL_PER_PAGINA, this.tabellaProdotti.length); i++) {
       this.prodotti.push(this.tabellaProdotti[i]);
+      this.prodotti.sort(this.comparaProdotti);
     }
     // Aggiorna indice
     this.indiceInizio += EL_PER_PAGINA;
