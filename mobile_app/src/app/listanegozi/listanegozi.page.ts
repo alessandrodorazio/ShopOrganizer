@@ -35,16 +35,16 @@ export class ListaNegoziPage implements OnInit {
     this.infoUtente = this.appState.get(Utente.UTENTE_KEY);
     console.log('InfoUtente load: ' + JSON.stringify(this.infoUtente));
     this.selezionati = this.appState.extract('ShopOrganizer.ProdottiSelezionati');
-    if (this.selezionati !== null) {
-      this.caricaNegozi();
-    } else {
-      this.loading = false;
-    }
 
     // Estrate posizione corrente o coordinate di preferenza dell'utente
     if (this.infoUtente.usaPosAttuale) {
       this.geoLoc.getCurrentPosition().then((loc) => {
         console.log('Posizione Corrente, lat=' + loc.coords.latitude + '- long=' + loc.coords.longitude);
+        if (this.selezionati !== null) {
+          this.caricaNegozi();
+        } else {
+          this.loading = false;
+        }
         this.latitude = loc.coords.latitude;
         this.longitude = loc.coords.longitude;
       }).catch((error) => {
