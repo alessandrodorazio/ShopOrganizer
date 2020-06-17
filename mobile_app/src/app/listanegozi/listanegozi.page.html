@@ -10,7 +10,7 @@
 <ion-content *ngIf="risultatiPresenti() && !loading">
   <ion-item>
     <ion-label>Ordina risultati per</ion-label>
-    <ion-select value="{{ infoUtente?.ordinamento }}" (ionChange)="ordina($event)">
+    <ion-select value="{{ ordinamento }}" (ionChange)="ordina($event)">
       <ion-select-option value="DISTANZA">Distanza</ion-select-option>
       <ion-select-option value="PREZZO">Prezzo</ion-select-option>
     </ion-select>
@@ -28,11 +28,7 @@
         </ion-col>
         <ion-col class="text-right" color="success">
           <ion-card-title color="primary">€ {{ negozio.totale | number: '1.2-2' }}</ion-card-title></ion-col>
-
       </ion-row>
-      
-
-
     </ion-card-content>
     </ion-card>
 </ion-content>

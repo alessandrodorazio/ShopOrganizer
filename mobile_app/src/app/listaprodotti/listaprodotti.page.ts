@@ -37,13 +37,13 @@ export class ListaProdottiPage implements OnInit {
     this.route.queryParams.subscribe(params => {
       const paramName = 'listaId';
       const listaId = params[paramName];
-      console.log('Richiesta lista da aggiungere: ' + listaId);
+      console.log('listaProdotti.init() - Richiesta lista da aggiungere: ' + listaId);
 
       this.remoteService.getLista(listaId).subscribe((data: []) => {
         if (data) {
           const prodProp = 'prodotti';
           const prodottiInLista = data[prodProp];
-          // this.selezionati.clear();
+
           prodottiInLista.forEach((element: { id: number; pivot: { quantita: number; }; }) => {
             this.selezionaProdotto(element.id, element.pivot.quantita);
           });
@@ -53,15 +53,15 @@ export class ListaProdottiPage implements OnInit {
     });
   }
 
-  comparaProdotti( prodotto1, prodotto2 ) {
-    if ( prodotto1.nome < prodotto2.nome ){
+  comparaProdotti(prodotto1: any, prodotto2: any) {
+    if (prodotto1.nome < prodotto2.nome) {
       return -1;
     }
-    if ( prodotto1.nome > prodotto2.nome ){
+    if (prodotto1.nome > prodotto2.nome) {
       return 1;
     }
     return 0;
-  };
+  }
 
   // Events...
 
@@ -95,7 +95,6 @@ export class ListaProdottiPage implements OnInit {
   }
 
   effettuaRicerca(testo: string) {
-    console.log(localStorage.getItem('UTENTE.key'));
     // aggiorna testo di ricerca (il model a volte è lento e risulta non aggiornato)
     this.testoRicerca = testo.trim();
     // Stessa ricerca di prima? Si, termina
@@ -110,7 +109,7 @@ export class ListaProdottiPage implements OnInit {
       this.remoteService.getLista(listaId).subscribe((data: []) => {
         const prodProp = 'prodotti';
         const prodottiInLista = data[prodProp];
-        // this.selezionati.clear();
+
         prodottiInLista.forEach((element: { id: number; pivot: { quantita: any; }; }) => {
           this.selezionaProdotto(element.id, element.pivot.quantita);
         });
@@ -140,7 +139,7 @@ export class ListaProdottiPage implements OnInit {
   }
 
   calcola(event: any) {
-    console.log('Avvia calcolo...');
+    console.log('listaProdotti Avvia calcolo...');
      // salva la lista
     const daSalvare = [];
     // Estrae e copia i prodotti selezionati senza quantità
@@ -172,9 +171,27 @@ export class ListaProdottiPage implements OnInit {
     } else {
       // Si, aggiorna stato utente
       const infoUtente = this.appState.get(Utente.UTENTE_KEY);
-      infoUtente.listaSalvata = daSalvare;
+      // Se è la prima volta, inizializza
+      if (!infoUtente.listaSalvata === null) {
+        infoUtente.listaSalvata = [];
+      }
+      // Aggiunge alla lista precedente
+      daSalvare.forEach(e => {
+        // Aggiungi solo se il orodotto non è già presente
+        console.log(JSON.stringify(e));
+        let found = false;
+        infoUtente.listaSalvata.forEach((p: { id: any; }) => {
+          if (p.id === e.id) {
+            found = true;
+          }
+        });
+
+        if (!found) {
+          infoUtente.listaSalvata.push(e);
+        }
+      });
+      // infoUtente.listaSalvata = daSalvare;   TODO: rimuovere se OK
       this.appState.add(Utente.UTENTE_KEY, infoUtente);
-      console.log(infoUtente);
       const user = infoUtente;
 
       const body = {
@@ -184,33 +201,28 @@ export class ListaProdottiPage implements OnInit {
           }
         }
       };
-      console.log(body);
 
       async function postData(url = '', data = {}) {
         const response = await fetch(url, {
-          method: 'PUT', // *GET, POST, PUT, DELETE, etc.
-          mode: 'cors', // no-cors, *cors, same-origin
-          cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-          credentials: 'same-origin', // include, *same-origin, omit
+          method: 'PUT',
+          mode: 'cors',
+          cache: 'no-cache',
+          credentials: 'same-origin',
           headers: {
             'Content-Type': 'application/json'
-            // 'Content-Type': 'application/x-www-form-urlencoded',
           },
-          redirect: 'follow', // manual, *follow, error
-          referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin,
-                                         // same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+          redirect: 'follow',
+          referrerPolicy: 'no-referrer',
           body: JSON.stringify(data)
         });
-        return response.json(); // parses JSON response into native JavaScript objects
-      }
 
-      console.log('https://shoporganizer.herokuapp.com/public/api/users/' + user.id + '?token=' + infoUtente.token);
+        return response.json();
+      }
 
       postData('https://shoporganizer.herokuapp.com/public/api/users/' + user.id + '?token=' + infoUtente.token, body)
         .then(data => {
-          console.log(data);
-          // TODO show alert
-        }).catch(err => console.error(err));
+          console.log('listaProdotti.salvaLista Result = ' + JSON.stringify(data));
+        }).catch(err => console.error('listaprodotti.salvalista ERROR: ' + err));
 
       this.router.navigate(['/tabs/listasalvata']);
     }
@@ -237,7 +249,6 @@ export class ListaProdottiPage implements OnInit {
   }
 
   selezionaProdotto(id: number, event: any) {
-    console.log('selezionaProdotto: ' + id + ' = ' + event);
     if (event !== null) {
       this.selezionati.set(id, event);
       this.aggiornaSelezione();

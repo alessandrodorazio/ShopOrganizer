@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { DettaglioprodottiPage } from './dettaglioprodotti/dettaglioprodotti.page';
 import { Utente } from './../model/utente';
 import { Negozio, NegozioTotale } from './../model/negozio';
@@ -5,7 +6,7 @@ import { RemoteService } from './../service/remote.service';
 import { ProdottoPrezzato } from './../model/prodotto';
 import { AppStateService } from './../service/appstate.service';
 import { Component, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { ModalController, ToastController, AlertController } from '@ionic/angular';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { DomSanitizer } from '@angular/platform-browser';
 
@@ -15,6 +16,7 @@ import { DomSanitizer } from '@angular/platform-browser';
   styleUrls: ['./listanegozi.page.scss'],
 })
 export class ListaNegoziPage implements OnInit {
+  noGPSMessage = 'Impossibile accedere alle coordinate GPS. Verificare le impostazioni!';
   selezionati: ProdottoPrezzato[] = [];
   risultato: NegozioTotale[] = [];
   risultatoView: NegozioTotale[] = [];
@@ -22,37 +24,73 @@ export class ListaNegoziPage implements OnInit {
   negozioDettaglio: Negozio;
   infoUtente: Utente;
   loading: boolean;
+  // Valori di default
   latitude = 0;
   longitude = 0;
+  distanzaMaxKm = 15;
+  nMassimoNegozi = 10;
+  ordinamento = 'PREZZO';
 
   constructor(private sanitize: DomSanitizer, private appState: AppStateService, private remoteService: RemoteService,
-              private modalController: ModalController, private geoLoc: Geolocation) { }
+              private modalController: ModalController, private geoLoc: Geolocation, private toastController: ToastController,
+              private router: Router, private alertController: AlertController) { }
 
   ngOnInit() {
   }
 
   ionViewWillEnter() {
     this.infoUtente = this.appState.get(Utente.UTENTE_KEY);
-    console.log('InfoUtente load: ' + JSON.stringify(this.infoUtente));
     this.selezionati = this.appState.extract('ShopOrganizer.ProdottiSelezionati');
+    if (!this.selezionati) {
+      console.log('listaNegozi.enter: nessun prodotto selezionato...bug?? Rimando alla lista prodotti!');
+      this.loading = false;
+      this.router.navigate(['/tabs/listaprodotti']);
+    }
 
-    // Estrate posizione corrente o coordinate di preferenza dell'utente
-    if (this.infoUtente.usaPosAttuale) {
-      this.geoLoc.getCurrentPosition().then((loc) => {
-        console.log('Posizione Corrente, lat=' + loc.coords.latitude + '- long=' + loc.coords.longitude);
-        if (this.selezionati !== null) {
+    // Informazioni utente disponibili?
+    if (this.infoUtente) {
+      this.distanzaMaxKm = this.infoUtente.raggioKm;
+      this.nMassimoNegozi = this.infoUtente.maxRisultati;
+      this.ordinamento = this.infoUtente.ordinamento;
+
+      // Estrate posizione corrente o coordinate di preferenza dell'utente
+      if (this.infoUtente.usaPosAttuale) {
+        this.geoLoc.getCurrentPosition().then((loc) => {
+          console.log('listaNegozi.Posizione Corrente, lat=' + loc.coords.latitude + '- long=' + loc.coords.longitude);
+
+          // usa coordinate reperite dal GPS
+          this.latitude = loc.coords.latitude;
+          this.longitude = loc.coords.longitude;
+
           this.caricaNegozi();
-        } else {
-          this.loading = false;
-        }
+        }).catch((error) => {
+          console.log('listaNegozi.Error getting location', error);
+          this.notifica(this.noGPSMessage);
+        });
+      } else {
+        this.latitude = this.infoUtente.lat;
+        this.longitude = this.infoUtente.long;
+
+        this.caricaNegozi();
+      }
+    } else {
+      // Caso con parametri di default
+      console.log('listaNegozi.Uso parametri default: ' + this.nMassimoNegozi + ' negozi, ' + this.distanzaMaxKm + 'km, ordinam: ' +
+                  this.ordinamento + ', Posizione GPS.');
+      this.geoLoc.getCurrentPosition().then((loc) => {
+        console.log('listaNegozi.Posizione Corrente, lat=' + loc.coords.latitude + '- long=' + loc.coords.longitude);
+
+        // usa coordinate reperite dal GPS
         this.latitude = loc.coords.latitude;
         this.longitude = loc.coords.longitude;
+
+        this.presentToast('Abbiamo utilizzato i valori predefiniti per la ricerca. Per personalizzarli registrati o accedi!');
+
+        this.caricaNegozi();
       }).catch((error) => {
-        console.log('Error getting location', error);
+        console.log('listaNegozi.Error getting location', error);
+        this.notifica(this.noGPSMessage);
       });
-    } else {
-      this.latitude = this.infoUtente.lat;
-      this.longitude = this.infoUtente.long;
     }
   }
 
@@ -61,7 +99,6 @@ export class ListaNegoziPage implements OnInit {
     this.remoteService.getNegozi().subscribe((data: []) => {
       data.forEach(el => {
         const n = new Negozio();
-        console.log(el);
 
         let prop = 'id';
         n.id = el[prop];
@@ -130,10 +167,9 @@ export class ListaNegoziPage implements OnInit {
       nt.totale = 0;
 
       nt.distanza = this.calcolaDistanzaInKm(this.latitude, this.longitude, n.coordinate.lat, n.coordinate.long);
-      console.log('Distanza = ' + nt.distanza + ', ' + this.infoUtente.raggioKm);
+
       // Siamo nel raggio massimo richiesto?
-      // if (nt.distanza <= this.infoUtente.raggioKm) {
-      if (true) {
+      if (nt.distanza <= this.distanzaMaxKm) {
         this.selezionati.forEach(sel => {
           nt.totale += n.prodotti.filter(p => p.id === sel.id).reduce((tot, el) => {
             return tot + (el.prezzo * sel.quantita);
@@ -143,7 +179,6 @@ export class ListaNegoziPage implements OnInit {
         this.risultato.push(nt);
       }
     });
-    console.log('Output = ' + JSON.stringify(this.risultato));
 
     this.ordina(null);
   }
@@ -151,17 +186,17 @@ export class ListaNegoziPage implements OnInit {
   ordina(event: any) {
     // riordina l'elenco in base alla preferenza
     if (event !== null) {
-      this.infoUtente.ordinamento = event.target.value;
+      this.ordinamento = event.target.value;
     }
 
-    if (this.infoUtente.ordinamento === 'PREZZO') {
+    if (this.ordinamento === 'PREZZO') {
       this.risultatoView =  Object.assign([], this.risultato.sort((a, b) => {
         const d = a.totale - b.totale;
         // a pari prezzo preferisci la distanza
         return (d === 0) ? (a.distanza - b.distanza) : d;
       }));
 
-      this.risultatoView = this.risultatoView.splice(0, this.infoUtente.maxRisultati);
+      this.risultatoView = this.risultatoView.splice(0, this.nMassimoNegozi);
     } else {
       this.risultatoView = Object.assign([], this.risultato.sort((a, b) => {
         const d = a.distanza - b.distanza;
@@ -169,7 +204,7 @@ export class ListaNegoziPage implements OnInit {
         return (d === 0) ? (a.totale - b.totale) : d;
       }));
 
-      this.risultatoView = this.risultatoView.splice(0, this.infoUtente.maxRisultati);
+      this.risultatoView = this.risultatoView.splice(0, this.nMassimoNegozi);
     }
   }
 
@@ -178,7 +213,6 @@ export class ListaNegoziPage implements OnInit {
   }
 
   async showModal() {
-    console.log('ok 2!');
     const modal = await this.modalController.create({
       component: DettaglioprodottiPage,
       componentProps: {
@@ -188,6 +222,17 @@ export class ListaNegoziPage implements OnInit {
     });
 
     return await modal.present();
+  }
+
+  async notifica(testo: string) {
+    // Mostra alert con messaggio
+    const alert = await this.alertController.create({
+      header: 'ShopOrganizer',
+      message: testo,
+      buttons: ['OK']
+    });
+    // Attende chiusura...
+    await alert.present();
   }
 
   apriDettaglio(id: number) {
@@ -200,20 +245,27 @@ export class ListaNegoziPage implements OnInit {
   }
 
   private calcolaDistanzaInKm(lat1: number, lon1: number, lat2: number, lon2: number) {
-    const R = 6371; // Radius of the earth in km
-    const dLat = this.deg2rad(lat2 - lat1);  // deg2rad below
+    const R = 6371.0; // Raggio della terra in Km
+    const dLat = this.deg2rad(lat2 - lat1);
     const dLon = this.deg2rad(lon2 - lon1);
     const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.cos(this.deg2rad(lat1)) * Math.cos(this.deg2rad(lat2)) *
       Math.sin(dLon / 2) * Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    const d = R * c; // Distance in km
-
-    return d;
+    return (R * c); // Distanza in km
   }
 
   private deg2rad(deg: number) {
     return deg * (Math.PI / 180.0);
+  }
+
+  async presentToast(msg: string, expire = 2000) {
+    const toast = await this.toastController.create({
+      header: 'Attenzione!',
+      message: msg,
+      duration: expire
+    });
+    toast.present();
   }
 }

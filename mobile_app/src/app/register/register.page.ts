@@ -1,8 +1,9 @@
 import { AppStateService } from './../service/appstate.service';
 import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
-import { NavController, AlertController } from '@ionic/angular';
+import { AlertController } from '@ionic/angular';
 import { Utente } from '../model/utente';
+
 @Component({
   selector: 'app-register',
   templateUrl: './register.page.html',
@@ -12,8 +13,7 @@ export class RegisterPage implements OnInit {
   user: Utente = new Utente();
   passwordConfirm: string;
 
-  constructor(private navCtrl: NavController, private router: Router, private alertController: AlertController,
-              private appState: AppStateService) { }
+  constructor(private router: Router, private alertController: AlertController, private appState: AppStateService) { }
 
   ngOnInit() { }
 
@@ -95,9 +95,10 @@ export class RegisterPage implements OnInit {
 
     postData('https://shoporganizer.herokuapp.com/public/api/register', {email: this.user.email, password: this.user.password})
       .then(data => {
-        console.log(data);
+        console.log('Register.register.postData.DATA: ' + JSON.stringify(data));
 
         if (data.access_token) {
+          this.appState.remove(Utente.UTENTE_KEY);
           const infoUtente = new Utente();
 
           infoUtente.id = data.user.id;
@@ -113,15 +114,16 @@ export class RegisterPage implements OnInit {
           infoUtente.long = -1;
           infoUtente.firtTime = true;
 
+          console.log('Register.register.infoUtente: ' + JSON.stringify(infoUtente));
           this.appState.add(Utente.UTENTE_KEY, infoUtente);
-          this.router.navigate(['/tabs/preferenze']);
+          this.router.navigate(['/tabs/preferenze'], { replaceUrl: true });
         } else {
           this.emailAlreadyTaken();
         }
       })
       .catch(err => {
         this.emailAlreadyTaken();
-        console.error(err);
+        console.error('Register.register.postData.ERROR: ' + err);
       });
   }
 }

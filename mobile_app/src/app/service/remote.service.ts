@@ -33,8 +33,8 @@ export class RemoteService {
   }
 
   // restituisce una lista di prodotti...
-  getLista(lista_id): Observable<any[]> {
-    return this.http.get<any[]>(this.baseurl + '/liste/' + lista_id, this.httpOptions)
+  getLista(listaId: string): Observable<any[]> {
+    return this.http.get<any[]>(this.baseurl + '/liste/' + listaId, this.httpOptions)
     .pipe(
       retry(1),
       catchError(this.errorHandler)
@@ -69,7 +69,7 @@ export class RemoteService {
       // Errore server-side
       errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
     }
-    console.log(errorMessage);
+    console.error('RemoteService.ErrorHandler: ' + errorMessage);
     return throwError(errorMessage);
   }
 }

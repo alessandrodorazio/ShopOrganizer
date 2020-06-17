@@ -1,5 +1,5 @@
 import { Router } from '@angular/router';
-import { AlertController } from '@ionic/angular';
+import { AlertController, ToastController } from '@ionic/angular';
 import { Utente } from './../model/utente';
 import { AppStateService } from './../service/appstate.service';
 import { Prodotto } from './../model/prodotto';
@@ -15,7 +15,7 @@ export class ListaSalvataPage implements OnInit {
   prodotti: Prodotto[] = [];
   infoUtente: Utente = null;
 
-  constructor(private clipboard: Clipboard, private appState: AppStateService,
+  constructor(private clipboard: Clipboard, private appState: AppStateService, private toastController: ToastController,
               private alertController: AlertController, private router: Router) {}
 
   ngOnInit() { }
@@ -23,9 +23,10 @@ export class ListaSalvataPage implements OnInit {
   ionViewWillEnter() {
     this.infoUtente = this.appState.get(Utente.UTENTE_KEY);
     if (this.infoUtente === null) {
-      this.router.navigate(['/login']);
+      this.router.navigate(['/login'], { replaceUrl: true });
     } else {
       this.prodotti = this.infoUtente.listaSalvata;
+      this.presentToast('I prodotti selezionati sono stati aggiunti alla lista!');
     }
   }
 
@@ -59,7 +60,7 @@ export class ListaSalvataPage implements OnInit {
         referrerPolicy: 'no-referrer',
         body: JSON.stringify(data)
       });
-      return response.json(); // parses JSON response into native JavaScript objects
+      return response.json();
     }
 
     postData('https://shoporganizer.herokuapp.com/public/api/users/' + this.infoUtente.id + '?token=' + this.infoUtente.token, body)
@@ -84,7 +85,7 @@ export class ListaSalvataPage implements OnInit {
         this.infoUtente.firtTime = false;
 
         this.appState.add(Utente.UTENTE_KEY, this.infoUtente);
-    }).catch(err => console.error(err));
+    }).catch(err => console.error('listasalvata.salva ERROR: ' + err));
 
     this.notifica('Lista salvata nel profilo.');
   }
@@ -108,5 +109,13 @@ export class ListaSalvataPage implements OnInit {
     });
     // Attende chiusura...
     await alert.present();
+  }
+
+  async presentToast(msg: string, expire = 2000) {
+    const toast = await this.toastController.create({
+      message: msg,
+      duration: expire
+    });
+    toast.present();
   }
 }

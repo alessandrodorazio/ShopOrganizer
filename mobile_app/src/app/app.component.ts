@@ -11,8 +11,7 @@ import { AppStateService } from './service/appstate.service';
   styleUrls: ['app.component.scss']
 })
 export class AppComponent {
-  constructor(private appState: AppStateService, private platform: Platform,
-              private splashScreen: SplashScreen, private statusBar: StatusBar) {
+  constructor(private platform: Platform, private splashScreen: SplashScreen, private statusBar: StatusBar) {
     this.initializeApp();
   }
 

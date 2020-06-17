@@ -1,7 +1,6 @@
 import { Utente } from './../model/utente';
 import { AppStateService } from './../service/appstate.service';
 import { Component, OnInit } from '@angular/core';
-import { Storage } from '@ionic/storage';
 import { Router } from '@angular/router';
 import { AlertController, NavController } from '@ionic/angular';
 import { Facebook } from '@ionic-native/facebook/ngx';
@@ -20,7 +19,7 @@ export class LoginPage implements OnInit {
   canGo = false;
 
   constructor(private fb: Facebook, private loadingController: LoadingController,
-              private storage: Storage, private appState: AppStateService, private router: Router,
+              private appState: AppStateService, private router: Router,
               private alertController: AlertController, private navCtrl: NavController) { }
 
   ngOnInit() {}
@@ -97,9 +96,10 @@ export class LoginPage implements OnInit {
     }
 
     postData('https://shoporganizer.herokuapp.com/public/api/login', {email: this.user.email, password: this.user.password}).then(data => {
-      console.log('Logged in: ' + JSON.stringify(data));
+      console.log('login.Logged in: ' + JSON.stringify(data));
 
       if (data.access_token) {
+        this.appState.remove(Utente.UTENTE_KEY);
         const infoUtente = new Utente();
 
         infoUtente.id = data.user.id;
@@ -121,13 +121,13 @@ export class LoginPage implements OnInit {
         }
         infoUtente.firtTime = false;
 
-
+        console.log('login.Login InfoUtente: ' + JSON.stringify(infoUtente));
         this.appState.add(Utente.UTENTE_KEY, infoUtente);
-        this.router.navigate(['/tabs/preferenze']);
+        this.router.navigate(['/tabs/preferenze'], { replaceUrl: true });
       } else {
         this.wrongCredentials();
       }
-    }).catch(err => console.error(err));
+    }).catch(err => console.error('login.ERROR: ' + err));
   }
 
   register() {
@@ -156,7 +156,7 @@ export class LoginPage implements OnInit {
     }
 
     const loading = await this.loadingController.create({
-      message: 'Please wait...'
+      message: 'Attendere...'
     });
     this.presentLoading(loading);
 
@@ -170,9 +170,10 @@ export class LoginPage implements OnInit {
       this.fb.api('/me?fields=name,email', permissions).then(user => {
         // user.email
         getData('https://shoporganizer.herokuapp.com/public/api/onlyEmail/' + user.email).then(data => {
-          console.log('Logged in: ' + JSON.stringify(data));
+          console.log('login.FB.Logged in: ' + JSON.stringify(data));
 
           if (data.access_token) {
+            this.appState.remove(Utente.UTENTE_KEY);
             const infoUtente = new Utente();
 
             infoUtente.id = data.user.id;
@@ -194,22 +195,23 @@ export class LoginPage implements OnInit {
             }
             infoUtente.firtTime = false;
 
+            console.log('login.Login InfoUtente(FB): ' + JSON.stringify(infoUtente));
             this.appState.add(Utente.UTENTE_KEY, infoUtente);
-            this.router.navigate(['/tabs/preferenze']);
+            this.router.navigate(['/tabs/preferenze'], { replaceUrl: true });
           } else {
             this.wrongCredentials();
           }
-        }).catch(err => console.error(JSON.stringify(err)));
+        }).catch(err => console.error('login.ERROR(FB).POST: ' + err));
 
         loading.dismiss();
       });
     }, error => {
-      console.log(error);
+      console.log('login.ERROR(FB).FBAPI:' + error);
       loading.dismiss();
     });
   }
 
-  async presentLoading(loading) {
+  async presentLoading(loading: any) {
     return await loading.present();
   }
 }

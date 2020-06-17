@@ -35,11 +35,11 @@ export class PreferenzePage implements OnInit, IDeactivatableComponent {
   ionViewWillEnter() {
     if (this.appState.get(Utente.UTENTE_KEY) === null) {
       this.performingLogout = true;
-      this.router.navigate(['/login']);
+      this.router.navigate(['/login'], { replaceUrl: true });
     } else {
       this.infoUtente = this.appState.get(Utente.UTENTE_KEY);
       this.indirizzo = this.infoUtente.indirizzo;
-      console.log('infoUtente Enter = ' + JSON.stringify(this.infoUtente));
+      console.log('Preferenze.infoUtente Enter = ' + JSON.stringify(this.infoUtente));
 
       this.nomeValido = (this.infoUtente.nome === null) ? false : (this.infoUtente.nome.length > 0);
       this.backup();
@@ -85,7 +85,7 @@ export class PreferenzePage implements OnInit, IDeactivatableComponent {
     }
 
     if (!this.somethingChanged()) {
-      console.log('Nessuna modifica...uscita!');
+      console.log('Preferenze.Nessuna modifica...uscita!');
       return true;
     }
 
@@ -112,7 +112,7 @@ export class PreferenzePage implements OnInit, IDeactivatableComponent {
     await alert.onDidDismiss().then((confrimOut) => {
       res = confrimOut.data;
     });
-    console.log('ConfPreferenze.canDeactivate(): ' + res);
+    console.log('Preferenze.ConfPreferenze.canDeactivate(): ' + res);
     return res;
   }
 
@@ -140,19 +140,19 @@ export class PreferenzePage implements OnInit, IDeactivatableComponent {
 
         this.nativeGeocoder.reverseGeocode(+coordinates[0].latitude, +coordinates[0].longitude, options)
           .then((result: NativeGeocoderResult[]) => {
-            console.log('Address decoded: ' + result[0].locality);
+            console.log('Preferenze.Address decoded: ' + result[0].locality);
             this.indirizzo = (result[0].thoroughfare + ', ' +  result[0].subThoroughfare + ' ' + result[0].locality).toUpperCase();
             this.infoUtente.indirizzo = this.indirizzo;
             this.indirizzoValido = true;
           })
           .catch((error: any) => {
-            console.log('Reverse Geocode: ' + error);
+            console.log('Preferenze.Reverse Geocode ERROR: ' + error);
             this.indirizzoValido = false;
             this.notifica(error);
           });
       })
       .catch((error: any) => {
-        console.log('Forward Geocode: ' + error);
+        console.log('Preferenze.Forward Geocode ERROR: ' + error);
         this.indirizzoValido = false;
         this.notifica(error);
       });
@@ -165,11 +165,11 @@ export class PreferenzePage implements OnInit, IDeactivatableComponent {
   logout(event: any) {
     this.performingLogout = true;
     this.appState.remove(Utente.UTENTE_KEY);
-    this.router.navigate(['/login']);
+    this.router.navigate(['/login'], { replaceUrl: true });
   }
 
   salva(event: any) {
-    console.log(this.infoUtente)
+    console.log('Preferenze.salva().infoUtente: ' + JSON.stringify(this.infoUtente));
     if (this.somethingChanged()) {
       const body = {
         user: {
@@ -201,7 +201,7 @@ export class PreferenzePage implements OnInit, IDeactivatableComponent {
           referrerPolicy: 'no-referrer',
           body: JSON.stringify(data)
         });
-        return response.json(); // parses JSON response into native JavaScript objects
+        return response.json();
       }
 
       console.log('https://shoporganizer.herokuapp.com/public/api/users/' + this.infoUtente.id + '?token=' + this.infoUtente.token);
@@ -209,13 +209,12 @@ export class PreferenzePage implements OnInit, IDeactivatableComponent {
         .then(data => {
           this.backup();
         })
-        .catch(err => console.error(err));
+        .catch(err => console.error('Preferenze.salva.postData.ERROR: ' + err));
 
       // Prima Configurazione completata...
       this.infoUtente.firtTime = false;
       // è più un replace...
       this.appState.add(Utente.UTENTE_KEY, this.infoUtente);
-      console.log('InfoUtente: ' + JSON.stringify(this.infoUtente));
     }
   }
 
@@ -225,15 +224,15 @@ export class PreferenzePage implements OnInit, IDeactivatableComponent {
   }
 
   backup() {
-    console.log('infoUtenteBackup Prima = ' + JSON.stringify(this.infoUtenteBackup));
+    console.log('Preferenze.infoUtenteBackup Prima = ' + JSON.stringify(this.infoUtenteBackup));
     this.infoUtenteBackup = {... this.infoUtente};
-    console.log('infoUtenteBackup Dopo = ' + JSON.stringify(this.infoUtenteBackup));
+    console.log('Preferenze.infoUtenteBackup Dopo = ' + JSON.stringify(this.infoUtenteBackup));
   }
 
   restore() {
-    console.log('infoUtente Prima = ' + JSON.stringify(this.infoUtente));
+    console.log('Preferenze.infoUtente Prima = ' + JSON.stringify(this.infoUtente));
     this.infoUtente = {... this.infoUtenteBackup};
-    console.log('infoUtente Dopo = ' + JSON.stringify(this.infoUtente));
+    console.log('Preferenze.infoUtente Dopo = ' + JSON.stringify(this.infoUtente));
   }
 
   async notifica(testo: string) {

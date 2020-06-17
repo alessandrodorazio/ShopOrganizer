@@ -18,15 +18,15 @@ export class DettaglioprodottiPage implements OnInit {
     this.selezionati.sort(this.comparaProdotti);
   }
 
-  comparaProdotti( prodotto1, prodotto2 ) {
-    if ( prodotto1.nome < prodotto2.nome ){
+  comparaProdotti(prodotto1: any, prodotto2: any) {
+    if (prodotto1.nome < prodotto2.nome) {
       return -1;
     }
-    if ( prodotto1.nome > prodotto2.nome ){
+    if (prodotto1.nome > prodotto2.nome) {
       return 1;
     }
     return 0;
-  };
+  }
 
   prezzoProdotto(id: number): number {
     const prod = this.negozio.prodotti.filter(p => (p.id === id))[0];
