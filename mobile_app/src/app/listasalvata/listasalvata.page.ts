@@ -81,7 +81,8 @@ export class ListaSalvataPage implements OnInit {
   }
 
   importaLista(event: any) {
-    this.router.navigate(['/tabs/listaprodotti'], { queryParams: { listaId: this.infoUtente.codiceLista } });
+    this.appState.add('CODICE_LISTA', this.infoUtente.codiceLista);
+    this.router.navigate(['/tabs/listaprodotti']);
   }
 
   async notifica(testo: string) {

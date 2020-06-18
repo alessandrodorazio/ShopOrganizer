@@ -1,5 +1,5 @@
 import { ProdottoPrezzato } from './../model/prodotto';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { Utente } from './../model/utente';
 import { AppStateService } from './../service/appstate.service';
 import { RemoteService } from '../service/remote.service';
@@ -27,32 +27,30 @@ export class ListaProdottiPage implements OnInit {
   elementiSelezionati = false;
 
   constructor(private remoteService: RemoteService, private alertController: AlertController,
-              private appState: AppStateService, private router: Router, private route: ActivatedRoute) {}
+              private appState: AppStateService, private router: Router) {}
 
   ngOnInit() {
     // Carica prodotti
     this.caricaProdotti(null);
 
     // Recupera parametro
-    this.route.queryParams.subscribe(params => {
-      const paramName = 'listaId';
-      const listaId = params[paramName];
-      if (listaId) {
-        console.log('listaProdotti.init() - Richiesta lista da aggiungere: ' + listaId);
+    const listaId = this.appState.get('CODICE_LISTA');
+    if (listaId) {
+      this.appState.remove('CODICE_LISTA');
+      console.log('listaProdotti.init() - Richiesta lista da aggiungere: ' + listaId);
 
-        this.remoteService.getLista(listaId).subscribe((data: []) => {
-          if (data) {
-            const prodProp = 'prodotti';
-            const prodottiInLista = data[prodProp];
+      this.remoteService.getLista(listaId).subscribe((data: []) => {
+        if (data) {
+          const prodProp = 'prodotti';
+          const prodottiInLista = data[prodProp];
 
-            prodottiInLista.forEach((element: { id: number; pivot: { quantita: number; }; }) => {
-              this.selezionaProdotto(element.id, element.pivot.quantita);
-            });
-            this.notifica('Prodotti della propria lista aggiunti al carrello!');
-          }
-        });
-      }
-    });
+          prodottiInLista.forEach((element: { id: number; pivot: { quantita: number; }; }) => {
+            this.selezionaProdotto(element.id, element.pivot.quantita);
+          });
+          this.notifica('Prodotti della propria lista aggiunti al carrello!');
+        }
+      });
+    }
   }
 
   comparaProdotti(prodotto1: any, prodotto2: any) {
