@@ -25,8 +25,11 @@ export class ListaSalvataPage implements OnInit {
     if (this.infoUtente === null) {
       this.router.navigate(['/login'], { replaceUrl: true });
     } else {
-      this.prodotti = this.infoUtente.listaSalvata;
-      this.presentToast('I prodotti selezionati sono stati aggiunti alla lista!');
+      if (this.appState.get('LISTA_SALVATA_SAVED')) {
+        this.prodotti = this.infoUtente.listaSalvata;
+        this.presentToast('I prodotti selezionati sono stati aggiunti alla lista!');
+        this.appState.remove('LISTA_SALVATA_SAVED');
+      }
     }
   }
 
@@ -65,7 +68,7 @@ export class ListaSalvataPage implements OnInit {
 
     postData('https://shoporganizer.herokuapp.com/public/api/users/' + this.infoUtente.id + '?token=' + this.infoUtente.token, body)
       .then(data => {
-        console.log("SALVATOOOO");
+        console.log('SALVATOOOO');
     }).catch(err => console.error('listasalvata.salva ERROR: ' + err));
 
     this.notifica('Lista salvata nel profilo.');

@@ -226,6 +226,7 @@ export class ListaProdottiPage implements OnInit {
           console.log('listaProdotti.salvaLista Result = ' + JSON.stringify(data));
         }).catch(err => console.error('listaprodotti.salvalista ERROR: ' + err));
 
+      this.appState.add('LISTA_SALVATA_SAVED', 'true');
       this.router.navigate(['/tabs/listasalvata']);
     }
   }
