@@ -32,11 +32,12 @@ export class ListaProdottiPage implements OnInit {
   ngOnInit() {
     // Carica prodotti
     this.caricaProdotti(null);
+  }
 
-    // Recupera parametro
-    const listaId = this.appState.get('CODICE_LISTA');
+  ionViewWillEnter() {
+    // Recupera parametro...abbiamo una lista da importare?
+    const listaId = this.appState.extract('CODICE_LISTA');
     if (listaId) {
-      this.appState.remove('CODICE_LISTA');
       console.log('listaProdotti.init() - Richiesta lista da aggiungere: ' + listaId);
 
       this.remoteService.getLista(listaId).subscribe((data: []) => {

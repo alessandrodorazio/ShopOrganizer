@@ -25,10 +25,12 @@ export class ListaSalvataPage implements OnInit {
     if (this.infoUtente === null) {
       this.router.navigate(['/login'], { replaceUrl: true });
     } else {
+      // Importa lista...
+      this.prodotti = this.infoUtente.listaSalvata;
+      // Se veniamo da un salvataggio, avvisa e pulisci evento...
       if (this.appState.get('LISTA_SALVATA_SAVED')) {
-        this.prodotti = this.infoUtente.listaSalvata;
-        this.presentToast('I prodotti selezionati sono stati aggiunti alla lista!');
         this.appState.remove('LISTA_SALVATA_SAVED');
+        this.presentToast('I prodotti selezionati sono stati aggiunti alla lista!');
       }
     }
   }
