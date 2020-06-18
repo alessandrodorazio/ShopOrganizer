@@ -65,26 +65,7 @@ export class ListaSalvataPage implements OnInit {
 
     postData('https://shoporganizer.herokuapp.com/public/api/users/' + this.infoUtente.id + '?token=' + this.infoUtente.token, body)
       .then(data => {
-        this.infoUtente.id = data.user.id;
-        this.infoUtente.token = data.access_token;
-        this.infoUtente.email = data.email;
-        this.infoUtente.nome = data.user.nome;
-        this.infoUtente.raggioKm = data.user.raggio_km;
-        this.infoUtente.codiceLista = data.user.lista_codice;
-        this.infoUtente.maxRisultati = data.user.max_negozi;
-        this.infoUtente.ordinamento = (data.user.preferenza_filtro === 1) ? 'PREZZO' : 'DISTANZA';
-        if (data.user.coordinate === null || data.user.coordinate.coordinates[0] === -1) {
-          this.infoUtente.usaPosAttuale = true;
-          this.infoUtente.lat = -1;
-          this.infoUtente.long = -1;
-        } else {
-          this.infoUtente.usaPosAttuale = false;
-          this.infoUtente.lat = data.user.coordinate.coordinates[0];
-          this.infoUtente.long = data.user.coordinate.coordinates[1];
-        }
-        this.infoUtente.firtTime = false;
-
-        this.appState.add(Utente.UTENTE_KEY, this.infoUtente);
+        console.log("SALVATOOOO");
     }).catch(err => console.error('listasalvata.salva ERROR: ' + err));
 
     this.notifica('Lista salvata nel profilo.');
